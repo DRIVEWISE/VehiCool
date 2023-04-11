@@ -6,21 +6,23 @@
 %  - Mattia Piazza.
 %------------------------------------------------------------------------------%
 
-classdef VehicleObj < BaseObject
-    %% VehicleObj
-    % This class represents a vehicle in the simulation.
+classdef Object3D < BaseObject
+    %% Object3D
+    % This class represents a an object in 3D space, meaning it has 6 Degrees of
+    % Freedom (i.e., [x, y, z, roll, pitch, yaw]).
     %
 
     %% Properties
     properties (SetAccess = private, Hidden = true)
 
         ax                % axes handle
-        state             % the state of the vehicle
+        parent            % handle of the parent object
+        state             % the state of the object
         rot_seq           % the rotation sequence
         stl               % the stl file
-        colour            % the colour of the vehicle
-        opacity           % the opacity of the vehicle
-        patch_obj         % the patch object representing the vehicle
+        colour            % the colour of the object
+        opacity           % the opacity of the object
+        patch_obj         % the patch object representing the object
         patch_transform   % the transform object for the patch
         default_transform % initial transform
 
@@ -30,20 +32,21 @@ classdef VehicleObj < BaseObject
     methods
 
         % Constructor
-        function obj = VehicleObj( state, stl_filepath, varargin )
-            % VehicleObj constructor
+        function obj = Object3D( state, stl_filepath, varargin )
+            % Object3D constructor
             %
             % Arguments
             % ---------
-            %  - state        -> the state of the vehicle.
+            %  - state        -> the state of the object.
             %  - stl_filepath -> the filepath to the stl file.
             %  - 'InitTrans'  -> the initial transformation for the STL. Default
             %                    is eye(4).
             %  - 'RotSeq'     -> rotation sequence for the transformations.
             %                    Default is 'zyx'.
-            %  - 'Colour'     -> the colour of the vehicle. Default is
+            %  - 'Colour'     -> the colour of the object. Default is
             %                    'DarkGray'.
-            %  - 'Opacity'    -> the opacity of the vehicle. Default is 1.0.
+            %  - 'Opacity'    -> the opacity of the object. Default is 1.0.
+            %  - 'Parent'     -> handle of the parent object. Default is [].
             %
 
             % Parse the inputs
@@ -54,6 +57,7 @@ classdef VehicleObj < BaseObject
             addParameter( p, 'RotSeq', 'zyx', @ischar );
             addParameter( p, 'Colour', rgb( 'DarkGray' ), @ischar );
             addParameter( p, 'Opacity', 1.0, @isnumeric );
+            addParameter( p, 'Parent', [], @(x) isa(x, 'Object3D') );
             parse( p, state, stl_filepath, varargin{:} );
 
             % Set the object properties
@@ -66,16 +70,17 @@ classdef VehicleObj < BaseObject
                                      [rot_seq(1), 'rotate']};
             obj.colour            = p.Results.Colour;
             obj.opacity           = p.Results.Opacity;
+            obj.parent            = p.Results.Parent;
 
         end
 
-        % Set the vehicle's state
+        % Set the object's state
         function set_state( obj, state )
-            % Set the vehicle's state
+            % Set the object's state
             %
             % Arguments
             % ---------
-            %  - state -> the state of the vehicle.
+            %  - state -> the state of the object.
             %
 
             % Set the state
@@ -83,9 +88,58 @@ classdef VehicleObj < BaseObject
 
         end
 
-        % Plot the vehicle
+        % Set the object's default transform
+        function set_default_transform( obj, default_transform )
+            % Set the object's default transform
+            %
+            % Arguments
+            % ---------
+            %  - default_transform -> the default transform.
+            %
+
+            % Set the default transform
+            obj.default_transform = default_transform;
+
+        end
+
+        % Get the object's transform
+        function out = get_transform( obj )
+            % Get the object's transform
+            %
+            % Outputs
+            % -------
+            %  - out -> the transform.
+            %
+
+            % Get the transform
+            out = get( obj.patch_transform, 'Matrix' );
+
+        end
+
+        % Transform the object
+        function transform( obj, T )
+            % Transform the object
+            %
+            % Arguments
+            % ---------
+            %  - T -> the transformation matrix.
+            %
+
+            % Apply the transformation
+            if ~isempty( obj.parent )
+                % Remove the parent's default transform
+                R = obj.parent.get_transform() / obj.parent.default_transform; % FIX ME THIS IS NOT THE TRUE INVERSE OF THE TRANSFORMATION MATRIX
+                set( obj.patch_transform, ...
+                     'Matrix', R * obj.default_transform * T );
+            else
+                set( obj.patch_transform, 'Matrix', obj.default_transform * T );
+            end
+
+        end
+
+        % Plot the object
         function plot( obj, ax, varargin )
-            % Plot the vehicle
+            % Plot the object
             %
             % Arguments
             % ---------
@@ -115,19 +169,19 @@ classdef VehicleObj < BaseObject
             % Set the initial transform
             set( obj.patch_transform, 'Matrix', obj.default_transform );
 
-            % Update the vehicle's position
+            % Update the object's position
             switch nargin
                 case 2
-                    obj.update( 1 );
+                    obj.update();
                 case 3
                     obj.update( varargin{1} );
             end
 
         end
 
-        % Update the vehicle's position
+        % Update the object's position
         function update( obj, varargin )
-            % Update the vehicle's position
+            % Update the object's position
             %
             % Arguments
             % ---------
@@ -154,12 +208,12 @@ classdef VehicleObj < BaseObject
 
             % Create the transform matrix
             T = makehgtform( 'translate', [x, y, z], ...
-                             obj.rot_seq{1}, a1, ...
-                             obj.rot_seq{2}, a2, ...
+                             obj.rot_seq{1}, a1,     ...
+                             obj.rot_seq{2}, a2,     ...
                              obj.rot_seq{3}, a3 );
 
             % Apply the transform
-            set( obj.patch_transform, 'Matrix', T * obj.default_transform );
+            obj.transform( T );
 
         end
 

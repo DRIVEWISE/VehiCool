@@ -74,25 +74,6 @@ classdef VehiCool < handle
 
         end
 
-        % Advance the scenario
-        function advance( obj, idx )
-            % Advance the scenario by one step.
-            %
-            % Arguments
-            % ---------
-            %  - idx -> index of the current step.
-            %
-
-            % Update the objects
-            for i = 1:length( obj.objects )
-                obj.objects{i}.update( idx );
-            end
-
-            % Update the camera
-            obj.camera.update( idx );
-
-        end
-
         % Render the scenario
         function [fig, ax] = render( obj, varargin )
             % Render the scenario.
@@ -139,6 +120,36 @@ classdef VehiCool < handle
             % Plot the objects
             for i = 1:length( obj.objects )
                 obj.objects{i}.plot( ax );
+            end
+
+        end
+
+        % Advance the scenario
+        function advance( obj, varargin )
+            % Advance the scenario by one step.
+            %
+            % Arguments
+            % ---------
+            %  - varargin{1} -> index of the current step.
+            %
+
+            % Advance to a specific step
+            if nargin == 2
+                % Update the objects
+                for i = 1:length( obj.objects )
+                    obj.objects{i}.update( idx );
+                end
+
+                % Update the camera
+                obj.camera.update( idx );
+            else
+                % Update the objects
+                for i = 1:length( obj.objects )
+                    obj.objects{i}.update();
+                end
+
+                % Update the camera
+                obj.camera.update();
             end
 
         end
