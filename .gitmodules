@@ -1,0 +1,3 @@
+[submodule "submodules/madhouse-utils"]
+	path = submodules/madhouse-utils
+	url = https://github.com/DRIVEWISE/madhouse-utils
