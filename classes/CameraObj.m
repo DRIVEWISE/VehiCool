@@ -1,14 +1,43 @@
 %------------------------------------------------------------------------------%
-% Latest revision: 08/04/2023.
-%
-% Authors:
+% Authors
 %  - Sebastiano Taddei.
+%
+% Contributors
 %  - Mattia Piazza.
 %------------------------------------------------------------------------------%
 
 classdef CameraObj < BaseObject
     %% CameraObj
-    %   This class sets the camera object for the simulation.
+    % This class creates the camera object for the simulation.
+    %
+    % Properties
+    % ----------
+    %  - ax         -> axis handle.
+    %  - state      -> camera state. It is a N x 3 matrix, where N is the number
+    %                  of samples and each row contains the camera position
+    %                  [x, y, z].
+    %  - target     -> camera target. It is a N x 3 matrix, where N is the
+    %                  number of samples and each row contains the camera target
+    %                  position [x, y, z].
+    %  - projection -> camera projection. Options are 'perspective' and
+    %                  'orthographic'. Default is 'perspective'.
+    %  - view_angle -> camera viewing angle [deg]. Default is 40 deg.
+    %
+    % Methods
+    % -------
+    %  - CameraObj( state, target, varargin ) -> constructor.
+    %  - set_state( state )                   -> set camera state.
+    %  - set_target( target )                 -> set camera target.
+    %  - plot( ax, varargin )                 -> set the camera.
+    %  - update( varargin )                   -> update camera state and target.
+    %
+    % Usage
+    % -----
+    %  - obj = CameraObj( state, target, varargin )
+    %  - obj.set_state( state )
+    %  - obj.set_target( target )
+    %  - obj.plot( ax, varargin )
+    %  - obj.update( varargin )
     %
 
     %% Properties
@@ -27,15 +56,28 @@ classdef CameraObj < BaseObject
 
         % Constructor
         function obj = CameraObj( state, target, varargin )
-            % This function sets the camera object for the simulation.
+            % This function creates the camera object for the simulation.
             %
             % Arguments
             % ----------
-            %  - state        -> camera state.
-            %  - target       -> camera target.
-            %  - 'Projection' -> camera projection. Default is 'perspective'.
-            %                    Options are 'perspective' and 'orthographic'.
+            %  - state        -> camera state. It is a N x 3 matrix, where N is
+            %                    the number of samples and each row contains the
+            %                    camera position [x, y, z].
+            %  - target       -> camera target. It is a N x 3 matrix, where N is
+            %                    the number of samples and each row contains the
+            %                    camera target position [x, y, z].
+            %  - 'Projection' -> camera projection. Options are 'perspective'
+            %                    and 'orthographic'. Default is 'perspective'.
             %  - 'ViewAngle'  -> camera viewing angle [deg]. Default is 40.
+            %
+            %
+            % Outputs
+            % -------
+            %  - obj -> camera object.
+            %
+            % Usage
+            % -----
+            %  - obj = CameraObj( state, target, varargin )
             %
 
             % Parse the inputs
@@ -60,7 +102,13 @@ classdef CameraObj < BaseObject
             %
             % Arguments
             % ----------
-            %  - state -> camera state.
+            %  - state -> camera state. It is a N x 3 matrix, where N is the
+            %             number of samples and each row contains the camera
+            %             position [x, y, z].
+            %
+            % Usage
+            % -----
+            %  - obj.set_state( state )
             %
 
             obj.state = state;
@@ -73,7 +121,13 @@ classdef CameraObj < BaseObject
             %
             % Arguments
             % ----------
-            %  - target -> camera target.
+            %  - target -> camera target. It is a N x 3 matrix, where N is the
+            %              number of samples and each row contains the camera
+            %              target position [x, y, z].
+            %
+            % Usage
+            % -----
+            %  - obj.set_target( target )
             %
 
             obj.target = target;
@@ -87,7 +141,11 @@ classdef CameraObj < BaseObject
             % Arguments
             % ----------
             %  - ax          -> axis handle.
-            %  - varargin{1} -> the index of the state to use. Default is 1.
+            %  - varargin{1} -> the index of the sample to use (optional).
+            %
+            % Usage
+            % -----
+            %  - obj.plot( ax, varargin )
             %
 
             % Set axis handle
@@ -102,7 +160,7 @@ classdef CameraObj < BaseObject
             % Update the camera
             switch nargin
                 case 2
-                    obj.update( 1 );
+                    obj.update();
                 case 3
                     obj.update( varargin{1} );
             end
@@ -116,7 +174,11 @@ classdef CameraObj < BaseObject
             %
             % Arguments
             % ----------
-            %  - varargin{1} -> the index of the state to use. Default is 1.
+            %  - varargin{1} -> the index of the sample to use (optional).
+            %
+            % Usage
+            % -----
+            %  - obj.update( varargin )
             %
 
             % Extract the current state and target based on the index

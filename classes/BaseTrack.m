@@ -1,15 +1,26 @@
 %------------------------------------------------------------------------------%
-% Latest revision: 08/04/2023.
-%
-% Authors:
+% Authors
 %  - Sebastiano Taddei.
+%
+% Contributors
 %  - Mattia Piazza.
 %------------------------------------------------------------------------------%
 
 classdef (Abstract) BaseTrack < handle
     %% BaseTrack
     % Base class for all tracks in the library.
-    % This class is abstract and cannot be instantiated.
+    %
+    % This class is abstract and cannot be instantiated. It serves as a
+    % template for all tracks in the library.
+    %
+    % Usage
+    % -----
+    % Whenever you want to create a new track, you should inherit from this
+    % class. You should implement the following properties and methods:
+    %  - properties (SetAccess = private, Hidden = true)
+    %    - ax -> axes handle.
+    %  - methods
+    %    - plot( obj, ax ) -> plot the object.
     %
 
     %% Properties - abstract

@@ -8,8 +8,60 @@
 
 classdef Object3D < BaseObject
     %% Object3D
-    % This class represents a an object in 3D space with 6 Degrees of Freedom
+    % This class creates a an object in 3D space with 6 Degrees of Freedom
     % (i.e., [x, y, z, roll, pitch, yaw]).
+    %
+    % Properties
+    % ----------
+    %  - ax                -> axes handle.
+    %  - parent            -> handle of the parent object.
+    %  - children          -> cell array of the handles to child objects.
+    %  - state             -> the state of the object. It is a N x 3 matrix,
+    %                         where N is the number of samples and each row
+    %                         contains the object state [x, y, z, a1, a2, a3].
+    %                         a1, a2, a3 are generic angles that can be used
+    %                         to represent the object orientation. The rotation
+    %                         sequence is defined by the 'RotSeq' parameter
+    %                         defined in the constructor.
+    %  - rot_seq           -> the rotation sequence. It is a string of 3
+    %                         characters, where each character can be 'x', 'y'
+    %                         or 'z'. The rotation sequence is defined by the
+    %                         'RotSeq' parameter defined in the constructor.
+    %  - stl               -> the stl file.
+    %  - colour            -> the colour of the object. It is a triplet of RGB
+    %                         values in the range [0, 1].
+    %  - opacity           -> the opacity of the object. It is a value in the
+    %                         range [0, 1].
+    %  - patch_obj         -> the patch object representing the object.
+    %  - patch_transform   -> the transform object for the patch.
+    %  - default_transform -> initial transform. It is a 4 x 4 transformation
+    %                         matrix.
+    %
+    % Methods
+    % -------
+    %  - Object3D( state, varargin ) -> constructor.
+    %  - set_state( state )          -> set the object's state.
+    %  - set_default_transform( default_transform ) -> set the object's default transform.
+    %  - get_transform()             -> get the object's transform.
+    %  - define_tree( parent )       -> define the object tree.
+    %  - transform( T )              -> transform the object.
+    %  - plot( ax, varargin )        -> plot the object.
+    %  - plot_children( ax, varargin ) -> plot the children of the object.
+    %  - update( varargin )          -> update the object.
+    %  - update_children( varargin ) -> update the children of the object.
+    %
+    % Usage
+    % -----
+    %  - obj = Object3D( state, varargin )
+    %  - obj.set_state( state )
+    %  - obj.set_default_transform( default_transform )
+    %  - T = obj.get_transform()
+    %  - obj.define_tree( parent )
+    %  - obj.transform( T )
+    %  - obj.plot( ax, varargin )
+    %  - obj.plot_children( ax, varargin )
+    %  - obj.update( varargin )
+    %  - obj.update_children( varargin )
     %
 
     %% Properties
@@ -38,17 +90,37 @@ classdef Object3D < BaseObject
             %
             % Arguments
             % ---------
-            %  - state        -> the state of the object.
+            %  - state        -> the state of the object. It is a N x 3 matrix,
+            %                    where N is the number of samples and each row
+            %                    contains the object state
+            %                    [x, y, z, a1, a2, a3]. a1, a2, a3 are generic
+            %                    angles that can be used to represent the object
+            %                    orientation. The rotation sequence is defined
+            %                    by the 'RotSeq' parameter defined in the
+            %                    constructor.
             %  - 'STLPath'    -> the path to the STL file. Default is
             %                    'models/refernce_frames/Reference_Frame_3D/Reference_Frame_3D.stl'.
-            %  - 'InitTrans'  -> the initial transformation for the STL. Default
-            %                    is eye(4).
-            %  - 'RotSeq'     -> rotation sequence for the transformations.
-            %                    Default is 'zxy'.
-            %  - 'Colour'     -> the colour of the object. Default is
+            %  - 'InitTrans'  -> the initial transformation for the STL. It is a
+            %                    4 x 4 transformation matrix. Default is eye(4).
+            %  - 'RotSeq'     -> rotation sequence for the transformations. It
+            %                    is a string of 3 characters, where each
+            %                    character can be 'x', 'y' or 'z'. The rotation
+            %                    sequence is defined by the 'RotSeq' parameter
+            %                    defined in the constructor. Default is 'zxy'.
+            %  - 'Colour'     -> the colour of the object. It is a triplet of
+            %                    RGB values in the range [0, 1]. Default is
             %                    'DarkGray'.
-            %  - 'Opacity'    -> the opacity of the object. Default is 1.0.
+            %  - 'Opacity'    -> the opacity of the object. It is a value in the
+            %                    range [0, 1]. Default is 1.0.
             %  - 'Parent'     -> handle of the parent object. Default is [].
+            %
+            % Outputs
+            % -------
+            %  - obj  -> the object.
+            %
+            % Usage
+            % -----
+            %  - obj = Object3D( state, varargin )
             %
 
             % Parse the inputs
@@ -84,7 +156,12 @@ classdef Object3D < BaseObject
             %
             % Arguments
             % ---------
-            %  - state -> the state of the object.
+            %  - state -> the state of the object. It is a N x 3 matrix, where N
+            %             is the number of samples and each row contains the
+            %             object state [x, y, z, a1, a2, a3]. a1, a2, a3 are
+            %             generic angles that can be used to represent the
+            %             object orientation. The rotation sequence is defined
+            %             by the 'RotSeq' parameter.
             %
 
             % Set the state
@@ -98,7 +175,8 @@ classdef Object3D < BaseObject
             %
             % Arguments
             % ---------
-            %  - default_transform -> the default transform.
+            %  - default_transform -> the default transform. It is a 4 x 4
+            %                         transformation matrix.
             %
 
             % Set the default transform
