@@ -17,6 +17,7 @@ classdef Object3D < BaseObject
 
         ax                % axes handle
         parent            % handle of the parent object
+        children          % list of the handles to child objects
         state             % the state of the object
         rot_seq           % the rotation sequence
         stl               % the stl file
@@ -32,13 +33,14 @@ classdef Object3D < BaseObject
     methods
 
         % Constructor
-        function obj = Object3D( state, stl_filepath, varargin )
+        function obj = Object3D( state, varargin )
             % Object3D constructor
             %
             % Arguments
             % ---------
             %  - state        -> the state of the object.
-            %  - stl_filepath -> the filepath to the stl file.
+            %  - 'STLPath'    -> the path to the STL file. Default is
+            %                    'models/refernce_frames/Reference_Frame_3D/Reference_Frame_3D.stl'.
             %  - 'InitTrans'  -> the initial transformation for the STL. Default
             %                    is eye(4).
             %  - 'RotSeq'     -> rotation sequence for the transformations.
@@ -52,17 +54,17 @@ classdef Object3D < BaseObject
             % Parse the inputs
             p = inputParser;
             addRequired( p, 'state', @isnumeric );
-            addRequired( p, 'stl_filepath', @ischar );
+            addParameter( p, 'STLPath', 'models/reference_frames/Reference_Frame_3D/Reference_Frame_3D.stl', @ischar );
             addParameter( p, 'InitTrans', eye(4), @isnumeric );
             addParameter( p, 'RotSeq', 'zxy', @ischar );
             addParameter( p, 'Colour', rgb( 'DarkGray' ), @ischar );
             addParameter( p, 'Opacity', 1.0, @isnumeric );
             addParameter( p, 'Parent', [], @(x) isa(x, 'Object3D') );
-            parse( p, state, stl_filepath, varargin{:} );
+            parse( p, state, varargin{:} );
 
             % Set the object properties
             obj.state             = p.Results.state;
-            obj.stl               = stlread( p.Results.stl_filepath );
+            obj.stl               = stlread( p.Results.STLPath );
             obj.default_transform = p.Results.InitTrans;
             rot_seq               = lower( p.Results.RotSeq );
             obj.rot_seq           = {[rot_seq(1), 'rotate'], ...
@@ -70,7 +72,9 @@ classdef Object3D < BaseObject
                                      [rot_seq(3), 'rotate']};
             obj.colour            = p.Results.Colour;
             obj.opacity           = p.Results.Opacity;
-            obj.parent            = p.Results.Parent;
+
+            % Set the parent
+            obj.define_tree( p.Results.Parent );
 
         end
 
@@ -113,6 +117,25 @@ classdef Object3D < BaseObject
 
             % Get the transform
             out = get( obj.patch_transform, 'Matrix' );
+
+        end
+
+        % Define the object tree
+        function define_tree( obj, parent )
+            % Define the object tree
+            %
+            % Arguments
+            % ---------
+            %  - parent -> the parent object.
+            %
+
+            % Set the parent
+            obj.parent = parent;
+
+            % Add the object to the parent's list of children
+            if ~isempty( obj.parent )
+                obj.parent.children{end + 1} = obj;
+            end
 
         end
 
@@ -179,13 +202,39 @@ classdef Object3D < BaseObject
 
         end
 
+        % Plot the object's children
+        function plot_children( obj, ax, varargin )
+            % Plot the object's children
+            %
+            % Arguments
+            % ---------
+            %  - ax          -> the axes handle.
+            %  - varargin{1} -> the index of the state to use (optional).
+            %
+
+            % Unravel the tree of objects
+            for i = 1:length( obj.children )
+                % Plot the root object
+                obj.children{i}.plot( ax, varargin{:} );
+
+                % Plot its children
+                if ~isempty( obj.children{i}.children )
+                    obj.children{i}.plot_children( ax, varargin{:} );
+                end
+            end
+
+        end
+
         % Update the object's position
         function update( obj, varargin )
             % Update the object's position
             %
             % Arguments
             % ---------
-            %  - varargin{1} -> the index of the state to use (optional).
+            %  - varargin{1} -> the index of the state to use (optional). If it
+            %                   is not provided, the current state is assumed to
+            %                   be the a vector of the form
+            %                   [x, y, z, a1, a2, a3].
             %
 
             % Extract the current state based on the index
@@ -214,6 +263,28 @@ classdef Object3D < BaseObject
 
             % Apply the transform
             obj.transform( T );
+
+        end
+
+        % Update the object's children
+        function update_children( obj, varargin )
+            % Update the object's children
+            %
+            % Arguments
+            % ---------
+            %  - varargin{1} -> the index of the state to use (optional).
+            %
+
+            % Unravel the tree of objects
+            for i = 1:length( obj.children )
+                % Update the root object
+                obj.children{i}.update( varargin{:} );
+
+                % Update its children
+                if ~isempty( obj.children{i}.children )
+                    obj.children{i}.update_children( varargin{:} );
+                end
+            end
 
         end
 

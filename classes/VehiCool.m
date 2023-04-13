@@ -17,7 +17,7 @@ classdef VehiCool < handle
 
         track       % track of the scenario
         camera      % camera view of the scenario
-        objects     % cell array of objects in the scenario
+        objects     % cell array of root objects in the scenario
         sample_time % sample time of the data
         frame_rate  % frame rate of the animation
 
@@ -62,8 +62,8 @@ classdef VehiCool < handle
         end
 
         % Add an object
-        function add_object( obj, object )
-            % Add an object to the scenario.
+        function add_root_object( obj, object )
+            % Add a root object to the scenario.
             %
             % Arguments
             % ---------
@@ -71,6 +71,39 @@ classdef VehiCool < handle
             %
 
             obj.objects{end + 1} = object;
+
+        end
+
+        % Plot the objects
+        function plot_objects( obj, ax, varargin )
+            % Plot the objects of the scenario.
+            %
+            % Arguments
+            % ---------
+            %  - ax          -> axes handle.
+            %  - varargin{1} -> index of the current step.
+            %
+
+            % Unravel the tree of objects
+            for i = 1:length( obj.objects )
+                if nargin == 2
+                    % Plot the root object
+                    obj.objects{i}.plot( ax );
+
+                    % Plot its children
+                    if ~isempty( obj.objects{i}.children )
+                        obj.objects{i}.plot_children( ax );
+                    end
+                else
+                    % Plot the root object
+                    obj.objects{i}.plot( ax, varargin{1} );
+
+                    % Plot its children
+                    if ~isempty( obj.objects{i}.children )
+                        obj.objects{i}.plot_children( ax, varargin{1} );
+                    end
+                end
+            end
 
         end
 
@@ -83,6 +116,10 @@ classdef VehiCool < handle
             %  - 'FigSize'     -> size of the figure. Default is [960, 540].
             %  - 'ShowFigure'  -> flag to show the figure or not. Default is
             %                     'on'.
+            %  - 'StartStep'   -> index of the first step to plot. If it is not
+            %                     provided, the current state is assumed to be
+            %                     the a vector of the form
+            %                     [x, y, z, a1, a2, a3].
             %
             % Outputs
             % -------
@@ -94,6 +131,7 @@ classdef VehiCool < handle
             p = inputParser;
             addParameter( p, 'FigSize', [960, 540], @isnumeric );
             addParameter( p, 'ShowFigure', 'on', @ischar );
+            addParameter( p, 'StartStep', 0, @isnumeric );
             parse( p, varargin{:} );
 
             % Create the figure and axes
@@ -104,8 +142,8 @@ classdef VehiCool < handle
 
             % Set the figure properties
             hold( ax, 'on' );
-            pbaspect( ax, [1 1 1] ); % axis aspect ratio
-            daspect( ax, [1 1 1] );  % axis ticks aspect ratio
+            pbaspect( ax, [1, 1. 1] ); % axis aspect ratio
+            daspect( ax, [1, 1, 1] );  % axis ticks aspect ratio
 
             % Set the scene lighting
             light( ax, 'Style', 'infinite' );
@@ -115,11 +153,49 @@ classdef VehiCool < handle
             obj.track.plot( ax );
 
             % Plot the camera
-            obj.camera.plot( ax );
+            if p.Results.StartStep == 0
+                obj.camera.plot( ax );
+            else
+                obj.camera.plot( ax, p.Results.StartStep );
+            end
 
             % Plot the objects
+            if p.Results.StartStep == 0
+                obj.plot_objects( ax );
+            else
+                obj.plot_objects( ax, p.Results.StartStep );
+            end
+
+        end
+
+        % Update the objects
+        function update_objects( obj, varargin )
+            % Update the objects of the scenario.
+            %
+            % Arguments
+            % ---------
+            %  - varargin{1} -> index of the current step.
+            %
+
+            % Update the objects
             for i = 1:length( obj.objects )
-                obj.objects{i}.plot( ax );
+                if nargin == 1
+                    % Update the root object
+                    obj.objects{i}.update();
+
+                    % Update its children
+                    if ~isempty( obj.objects{i}.children )
+                        obj.objects{i}.update_children();
+                    end
+                else
+                    % Update the root object
+                    obj.objects{i}.update( varargin{1} );
+
+                    % Update its children
+                    if ~isempty( obj.objects{i}.children )
+                        obj.objects{i}.update_children( varargin{1} );
+                    end
+                end
             end
 
         end
@@ -136,17 +212,13 @@ classdef VehiCool < handle
             % Advance to a specific step
             if nargin == 2
                 % Update the objects
-                for i = 1:length( obj.objects )
-                    obj.objects{i}.update( varargin{1} );
-                end
+                obj.update_objects( varargin{1} );
 
                 % Update the camera
                 obj.camera.update( varargin{1} );
             else
                 % Update the objects
-                for i = 1:length( obj.objects )
-                    obj.objects{i}.update();
-                end
+                obj.update_objects();
 
                 % Update the camera
                 obj.camera.update();
@@ -165,7 +237,7 @@ classdef VehiCool < handle
             %  - 'SampleTime'  -> sample time of the data. Default is 0.01.
             %  - 'FigSize'     -> size of the figure. Default is [960, 540].
             %  - 'ShowProgress'-> flag to show the progress bar or not. Default
-            %                     is true.
+            %                     is false.
             %  - 'ShowFigure'  -> flag to show the figure or not. Default is
             %                     'on'.
             %  - 'SaveVideo'   -> flag to save the video or not. Default is
@@ -181,7 +253,7 @@ classdef VehiCool < handle
             addParameter( p, 'FrameRate', 30, @isnumeric );
             addParameter( p, 'SampleTime', 0.01, @isnumeric );
             addParameter( p, 'FigSize', [960, 540], @isnumeric );
-            addParameter( p, 'ShowProgress', true, @islogical );
+            addParameter( p, 'ShowProgress', false, @islogical );
             addParameter( p, 'ShowFigure', 'on', @ischar );
             addParameter( p, 'SaveVideo', false, @islogical );
             addParameter( p, 'FileName', 'VehiCool', @ischar );
@@ -189,9 +261,15 @@ classdef VehiCool < handle
             addParameter( p, 'FileQuality', 100, @isnumeric );
             parse( p, tf, varargin{:} );
 
+            % Check that SampleTime <= 1 / FrameRate
+            if p.Results.SampleTime > 1 / p.Results.FrameRate
+                error( 'ERROR: SampleTime > 1 / FrameRate.' );
+            end
+
             % Render the scenario
             [fig, ax] = obj.render( 'FigSize', p.Results.FigSize, ...
-                                    'ShowFigure', p.Results.ShowFigure );
+                                    'ShowFigure', p.Results.ShowFigure, ...
+                                    'StartStep', 1 );
 
             % Create the video file if needed
             if p.Results.SaveVideo
@@ -202,22 +280,33 @@ classdef VehiCool < handle
                 open( vidfile );
             end
 
+            % Round the inverse of the frame rate to the same order of the
+            % sample time
+            frame_time = round( 1 / p.Results.FrameRate, ...
+                                -floor( log10( p.Results.SampleTime ) ) );
+
             % Simulate the scenario
             idx = 1;
+            tic
             for t = 0:p.Results.SampleTime:tf
 
                 % Simulate the scenario only at the specified frame rate
-                if mod( t, 1 / p.Results.FrameRate ) == 0
+                if mod( t, frame_time ) == 0
                     % Advance the scenario
+                    s_t = tic;
                     obj.advance( idx );
+                    drawnow nocallbacks;
+                    e_t = toc( s_t );
 
                     % Check if the user wants to save the animation
                     if p.Results.SaveVideo
                         A = getframe( fig );
                         writeVideo( vidfile, A );
                     else
-                        % Pause to animate
-                        pause( 1 / p.Results.FrameRate );
+                        % Try to pause for the remaining time
+                        if e_t < 1 / p.Results.FrameRate
+                            pause( 1 / p.Results.FrameRate - e_t );
+                        end
                     end
                 end
 
@@ -230,6 +319,7 @@ classdef VehiCool < handle
                 idx = idx + 1;
 
             end
+            toc
 
             % Stop holding onto the figure
             hold( ax, 'off' );
