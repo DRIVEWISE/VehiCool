@@ -35,7 +35,7 @@ classdef CameraObj < BaseObject
             %  - target       -> camera target.
             %  - 'Projection' -> camera projection. Default is 'perspective'.
             %                    Options are 'perspective' and 'orthographic'.
-            %  - 'ViewAngle'  -> camera viewing angle [deg]. Default is 50.
+            %  - 'ViewAngle'  -> camera viewing angle [deg]. Default is 40.
             %
 
             % Parse the inputs

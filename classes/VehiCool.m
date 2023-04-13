@@ -137,11 +137,11 @@ classdef VehiCool < handle
             if nargin == 2
                 % Update the objects
                 for i = 1:length( obj.objects )
-                    obj.objects{i}.update( idx );
+                    obj.objects{i}.update( varargin{1} );
                 end
 
                 % Update the camera
-                obj.camera.update( idx );
+                obj.camera.update( varargin{1} );
             else
                 % Update the objects
                 for i = 1:length( obj.objects )

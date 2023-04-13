@@ -8,8 +8,8 @@
 
 classdef Object3D < BaseObject
     %% Object3D
-    % This class represents a an object in 3D space, meaning it has 6 Degrees of
-    % Freedom (i.e., [x, y, z, roll, pitch, yaw]).
+    % This class represents a an object in 3D space with 6 Degrees of Freedom
+    % (i.e., [x, y, z, roll, pitch, yaw]).
     %
 
     %% Properties
@@ -42,7 +42,7 @@ classdef Object3D < BaseObject
             %  - 'InitTrans'  -> the initial transformation for the STL. Default
             %                    is eye(4).
             %  - 'RotSeq'     -> rotation sequence for the transformations.
-            %                    Default is 'zyx'.
+            %                    Default is 'zxy'.
             %  - 'Colour'     -> the colour of the object. Default is
             %                    'DarkGray'.
             %  - 'Opacity'    -> the opacity of the object. Default is 1.0.
@@ -54,7 +54,7 @@ classdef Object3D < BaseObject
             addRequired( p, 'state', @isnumeric );
             addRequired( p, 'stl_filepath', @ischar );
             addParameter( p, 'InitTrans', eye(4), @isnumeric );
-            addParameter( p, 'RotSeq', 'zyx', @ischar );
+            addParameter( p, 'RotSeq', 'zxy', @ischar );
             addParameter( p, 'Colour', rgb( 'DarkGray' ), @ischar );
             addParameter( p, 'Opacity', 1.0, @isnumeric );
             addParameter( p, 'Parent', [], @(x) isa(x, 'Object3D') );
@@ -66,8 +66,8 @@ classdef Object3D < BaseObject
             obj.default_transform = p.Results.InitTrans;
             rot_seq               = lower( p.Results.RotSeq );
             obj.rot_seq           = {[rot_seq(1), 'rotate'], ...
-                                     [rot_seq(1), 'rotate'], ...
-                                     [rot_seq(1), 'rotate']};
+                                     [rot_seq(2), 'rotate'], ...
+                                     [rot_seq(3), 'rotate']};
             obj.colour            = p.Results.Colour;
             obj.opacity           = p.Results.Opacity;
             obj.parent            = p.Results.Parent;
@@ -128,11 +128,11 @@ classdef Object3D < BaseObject
             % Apply the transformation
             if ~isempty( obj.parent )
                 % Remove the parent's default transform
-                R = obj.parent.get_transform() / obj.parent.default_transform; % FIX ME THIS IS NOT THE TRUE INVERSE OF THE TRANSFORMATION MATRIX
+                R = obj.parent.get_transform() / obj.parent.default_transform;
                 set( obj.patch_transform, ...
                      'Matrix', R * obj.default_transform * T );
             else
-                set( obj.patch_transform, 'Matrix', obj.default_transform * T );
+                set( obj.patch_transform, 'Matrix', T * obj.default_transform );
             end
 
         end
