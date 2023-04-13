@@ -11,18 +11,43 @@ classdef RaceTrack < BaseTrack
     % This class handles the creation of a racetrack object. It contains all the
     % information about the map of the racetrack.
     %
+    % Properties
+    % ----------
+    %  - ax           -> axes handle.
+    %  - centreline   -> N x 2 array of X and Y coordinates of the centreline.
+    %  - angles       -> N x 1 array of angles of the centreline.
+    %  - offsets      -> N x 1 array of offsets from the centreline.
+    %  - left_margin  -> N x 2 array of X and Y coordinates of the left margin.
+    %  - right_margin -> N x 2 array of X and Y coordinates of the right margin.
+    %  - left_kerb    -> N x 2 array of X and Y coordinates of the left kerb.
+    %  - right_kerb   -> N x 2 array of X and Y coordinates of the right kerb.
+    %
+    % Methods
+    % -------
+    %  - RaceTrack( left_margin, right_margin, ...
+    %               kerb_width )                   -> constructor.
+    %  - create_track( kerb_width )                -> create the margins and
+    %                                                 kerbs.
+    %  - plot( ax )                                -> plot the racetrack.
+    %
+    % Usage
+    % -----
+    %  - obj = RaceTrack( left_margin, right_margin, kerb_width )
+    %  - obj.create_track( kerb_width )
+    %  - obj.plot( ax )
+    %
 
     %% Properties
     properties (SetAccess = private, Hidden = true)
 
         ax           % axes handle
-        centreline   % nx2 array of X and Y coordinates of the centreline
-        angles       % nx1 array of angles of the centreline
-        offsets      % nx1 array of offsets from the centreline
-        left_margin  % nx2 array of X and Y coordinates of the left margin
-        right_margin % nx2 array of X and Y coordinates of the right margin
-        left_kerb    % nx2 array of X and Y coordinates of the left kerb
-        right_kerb   % nx2 array of X and Y coordinates of the right kerb
+        centreline   % N x 2 array of X and Y coordinates of the centreline
+        angles       % N x 1 array of angles of the centreline
+        offsets      % N x 1 array of offsets from the centreline
+        left_margin  % N x 2 array of X and Y coordinates of the left margin
+        right_margin % N x 2 array of X and Y coordinates of the right margin
+        left_kerb    % N x 2 array of X and Y coordinates of the left kerb
+        right_kerb   % N x 2 array of X and Y coordinates of the right kerb
 
     end
 
@@ -35,11 +60,19 @@ classdef RaceTrack < BaseTrack
             %
             % Arguments
             % ---------
-            %  - left_margin  -> nx2 array of X and Y coordinates of the left
+            %  - left_margin  -> N x 2 array of X and Y coordinates of the left
             %                    margin.
-            %  - right_margin -> nx2 array of X and Y coordinates of the right
+            %  - right_margin -> N x 2 array of X and Y coordinates of the right
             %                    margin.
             %  - kerb_width   -> width of the kerb.
+            %
+            % Outputs
+            % -------
+            %  - obj -> the racetrack object.
+            %
+            % Usage
+            % -----
+            %  - obj = RaceTrack( left_margin, right_margin, kerb_width )
             %
 
             % Create the centreline
@@ -54,17 +87,21 @@ classdef RaceTrack < BaseTrack
                           ./ 2;
 
             % Create the margins and kerbs
-            obj.create_margins_kerbs( kerb_width );
+            obj.create_track( kerb_width );
 
         end
 
         % Create the margins and kerbs
-        function create_margins_kerbs( obj, kerb_width )
+        function create_track( obj, kerb_width )
             % Create the margins and kerbs.
             %
             % Arguments
             % ---------
             %  - kerb_width -> width of the kerb.
+            %
+            % Usage
+            % -----
+            %  - obj.create_track( kerb_width )
             %
 
             % Create a clothoid from the centreline
@@ -107,6 +144,10 @@ classdef RaceTrack < BaseTrack
             % Arguments
             % ---------
             %  - ax -> axes handle.
+            %
+            % Usage
+            % -----
+            %  - obj.plot( ax )
             %
 
             % Set the axes handle

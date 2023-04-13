@@ -39,16 +39,20 @@ classdef Object3D < BaseObject
     %
     % Methods
     % -------
-    %  - Object3D( state, varargin ) -> constructor.
-    %  - set_state( state )          -> set the object's state.
-    %  - set_default_transform( default_transform ) -> set the object's default transform.
-    %  - get_transform()             -> get the object's transform.
-    %  - define_tree( parent )       -> define the object tree.
-    %  - transform( T )              -> transform the object.
-    %  - plot( ax, varargin )        -> plot the object.
-    %  - plot_children( ax, varargin ) -> plot the children of the object.
-    %  - update( varargin )          -> update the object.
-    %  - update_children( varargin ) -> update the children of the object.
+    %  - Object3D( state, varargin )                -> constructor.
+    %  - set_state( state )                         -> set the object's state.
+    %  - set_default_transform( default_transform ) -> set the object's default
+    %                                                  transform.
+    %  - get_transform()                            -> get the object's
+    %                                                  transform.
+    %  - define_tree( parent )                      -> define the object tree.
+    %  - transform( T )                             -> transform the object.
+    %  - plot( ax, varargin )                       -> plot the object.
+    %  - plot_children( ax, varargin )              -> plot the children of the
+    %                                                  object.
+    %  - update( varargin )                         -> update the object.
+    %  - update_children( varargin )                -> update the children of
+    %                                                  the object.
     %
     % Usage
     % -----
@@ -163,6 +167,10 @@ classdef Object3D < BaseObject
             %             object orientation. The rotation sequence is defined
             %             by the 'RotSeq' parameter.
             %
+            % Usage
+            % -----
+            %  - obj.set_state( state )
+            %
 
             % Set the state
             obj.state = state;
@@ -171,12 +179,16 @@ classdef Object3D < BaseObject
 
         % Set the object's default transform
         function set_default_transform( obj, default_transform )
-            % Set the object's default transform
+            % Set the object's default transformation matrix
             %
             % Arguments
             % ---------
             %  - default_transform -> the default transform. It is a 4 x 4
             %                         transformation matrix.
+            %
+            % Usage
+            % -----
+            %  - obj.set_default_transform( default_transform )
             %
 
             % Set the default transform
@@ -186,11 +198,15 @@ classdef Object3D < BaseObject
 
         % Get the object's transform
         function out = get_transform( obj )
-            % Get the object's transform
+            % Get the object's current transformation matrix
             %
             % Outputs
             % -------
-            %  - out -> the transform.
+            %  - out -> the transform. It is a 4 x 4 transformation matrix.
+            %
+            % Usage
+            % -----
+            %  - transform = obj.get_transform()
             %
 
             % Get the transform
@@ -205,6 +221,10 @@ classdef Object3D < BaseObject
             % Arguments
             % ---------
             %  - parent -> the parent object.
+            %
+            % Usage
+            % -----
+            %  - obj.define_tree( parent )
             %
 
             % Set the parent
@@ -224,6 +244,10 @@ classdef Object3D < BaseObject
             % Arguments
             % ---------
             %  - T -> the transformation matrix.
+            %
+            % Usage
+            % -----
+            %  - obj.transform( T )
             %
 
             % Apply the transformation
@@ -245,7 +269,12 @@ classdef Object3D < BaseObject
             % Arguments
             % ---------
             %  - ax          -> the axes handle.
-            %  - varargin{1} -> the index of the state to use (optional).
+            %  - varargin{1} -> the index of the sample to use (optional).
+            %
+            % Usage
+            % -----
+            %  - obj.plot( ax, varargin )
+            %
 
             % Set the axes handle
             obj.ax = ax;
@@ -287,7 +316,11 @@ classdef Object3D < BaseObject
             % Arguments
             % ---------
             %  - ax          -> the axes handle.
-            %  - varargin{1} -> the index of the state to use (optional).
+            %  - varargin{1} -> the index of the sample to use (optional).
+            %
+            % Usage
+            % -----
+            %  - obj.plot_children( ax, varargin )
             %
 
             % Unravel the tree of objects
@@ -309,10 +342,14 @@ classdef Object3D < BaseObject
             %
             % Arguments
             % ---------
-            %  - varargin{1} -> the index of the state to use (optional). If it
+            %  - varargin{1} -> the index of the sample to use (optional). If it
             %                   is not provided, the current state is assumed to
             %                   be the a vector of the form
             %                   [x, y, z, a1, a2, a3].
+            %
+            % Usage
+            % -----
+            %  - obj.update( varargin )
             %
 
             % Extract the current state based on the index
@@ -350,7 +387,11 @@ classdef Object3D < BaseObject
             %
             % Arguments
             % ---------
-            %  - varargin{1} -> the index of the state to use (optional).
+            %  - varargin{1} -> the index of the sample to use (optional).
+            %
+            % Usage
+            % -----
+            %  - obj.update_children( varargin )
             %
 
             % Unravel the tree of objects

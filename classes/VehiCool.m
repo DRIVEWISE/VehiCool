@@ -9,7 +9,39 @@
 classdef VehiCool < handle
     %% VehiCool
     % This class handles the creation of a scenario (i.e., a track, a set of
-    % vehicles, etc.). It also handles the simulation of the scenario.
+    % vehicles, etc.) as well as the animation of the scenario.
+    %
+    % Properties
+    % ----------
+    %  - track       -> track of the scenario.
+    %  - camera      -> camera view of the scenario.
+    %  - objects     -> cell array of root objects in the scenario.
+    %  - sample_time -> sample time of the data.
+    %  - frame_rate  -> frame rate of the animation.
+    %
+    % Methods
+    % -------
+    %  - VehiCool()                     -> constructor.
+    %  - set_track( track )             -> set the track of the scenario.
+    %  - add_camera( camera )           -> add a camera to the scenario.
+    %  - add_root_object( root_object ) -> add a root object to the scenario.
+    %  - plot_objects( ax, varargin )   -> plot the objects of the scenario.
+    %  - render( varargin )             -> render the scenario.
+    %  - update_objects( varargin )     -> update the objects of the scenario.
+    %  - advance( varargin )            -> advance the scenario by one step.
+    %  - animate( tf, varargin )        -> animate the scenario.
+    %
+    % Usage
+    % -----
+    %  - obj = VehiCool()
+    %  - obj.set_track( track )
+    %  - obj.add_camera( camera )
+    %  - obj.add_root_object( object )
+    %  - obj.plot_objects( ax, varargin )
+    %  - obj.render( varargin )
+    %  - obj.update_objects( varargin )
+    %  - obj.advance( varargin )
+    %  - obj.animate( tf, varargin )
     %
 
     %% Properties - all private
@@ -27,11 +59,19 @@ classdef VehiCool < handle
     methods
 
         % Constructor
-        function obj = VehiCool( )
+        function obj = VehiCool()
             % VehiCool constructor.
             %
-            % Useful ah?
+            % Outputs
+            % -------
+            %  - obj -> the scenario object.
             %
+            % Usage
+            % -----
+            %  - obj = VehiCool()
+            %
+
+            % Useful ah?
 
         end
 
@@ -42,6 +82,10 @@ classdef VehiCool < handle
             % Arguments
             % ---------
             %  - track -> track to add to the scenario.
+            %
+            % Usage
+            % -----
+            %  - obj.set_track( track )
             %
 
             obj.track = track;
@@ -56,6 +100,10 @@ classdef VehiCool < handle
             % ---------
             %  - camera -> camera to add to the scenario.
             %
+            % Usage
+            % -----
+            %  - obj.add_camera( camera )
+            %
 
             obj.camera = camera;
 
@@ -68,6 +116,10 @@ classdef VehiCool < handle
             % Arguments
             % ---------
             %  - object -> object to add to the scenario.
+            %
+            % Usage
+            % -----
+            %  - obj.add_root_object( object )
             %
 
             obj.objects{end + 1} = object;
@@ -82,6 +134,10 @@ classdef VehiCool < handle
             % ---------
             %  - ax          -> axes handle.
             %  - varargin{1} -> index of the current step.
+            %
+            % Usage
+            % -----
+            %  - obj.plot_objects( ax, varargin )
             %
 
             % Unravel the tree of objects
@@ -125,6 +181,10 @@ classdef VehiCool < handle
             % -------
             %  - fig -> figure handle.
             %  - ax  -> axes handle.
+            %
+            % Usage
+            % -----
+            %  - obj.render( varargin )
             %
 
             % Parse the inputs
@@ -176,6 +236,10 @@ classdef VehiCool < handle
             % ---------
             %  - varargin{1} -> index of the current step.
             %
+            % Usage
+            % -----
+            %  - obj.update_objects( varargin )
+            %
 
             % Update the objects
             for i = 1:length( obj.objects )
@@ -207,6 +271,10 @@ classdef VehiCool < handle
             % Arguments
             % ---------
             %  - varargin{1} -> index of the current step.
+            %
+            % Usage
+            % -----
+            %  - obj.advance( varargin )
             %
 
             % Advance to a specific step
@@ -245,6 +313,10 @@ classdef VehiCool < handle
             %  - 'FileName'    -> name of the video file. Default is 'VehiCool'.
             %  - 'FileFormat'  -> format of the video file. Default is 'MPEG-4'.
             %  - 'FileQuality' -> quality of the video file. Default is 100.
+            %
+            % Usage
+            % -----
+            %  - obj.animate( tf, varargin )
             %
 
             % Parse the inputs
