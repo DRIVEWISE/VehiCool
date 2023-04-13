@@ -300,12 +300,7 @@ classdef Object3D < BaseObject
             set( obj.patch_transform, 'Matrix', obj.default_transform );
 
             % Update the object's position
-            switch nargin
-                case 2
-                    obj.update();
-                case 3
-                    obj.update( varargin{1} );
-            end
+            obj.update( varargin{:} );
 
         end
 

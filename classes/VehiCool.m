@@ -142,22 +142,12 @@ classdef VehiCool < handle
 
             % Unravel the tree of objects
             for i = 1:length( obj.objects )
-                if nargin == 2
-                    % Plot the root object
-                    obj.objects{i}.plot( ax );
+                % Plot the root object
+                obj.objects{i}.plot( ax, varargin{:} );
 
-                    % Plot its children
-                    if ~isempty( obj.objects{i}.children )
-                        obj.objects{i}.plot_children( ax );
-                    end
-                else
-                    % Plot the root object
-                    obj.objects{i}.plot( ax, varargin{1} );
-
-                    % Plot its children
-                    if ~isempty( obj.objects{i}.children )
-                        obj.objects{i}.plot_children( ax, varargin{1} );
-                    end
+                % Plot its children
+                if ~isempty( obj.objects{i}.children )
+                    obj.objects{i}.plot_children( ax, varargin{:} );
                 end
             end
 
@@ -243,22 +233,12 @@ classdef VehiCool < handle
 
             % Update the objects
             for i = 1:length( obj.objects )
-                if nargin == 1
-                    % Update the root object
-                    obj.objects{i}.update();
+                % Update the root object
+                obj.objects{i}.update( varargin{:} );
 
-                    % Update its children
-                    if ~isempty( obj.objects{i}.children )
-                        obj.objects{i}.update_children();
-                    end
-                else
-                    % Update the root object
-                    obj.objects{i}.update( varargin{1} );
-
-                    % Update its children
-                    if ~isempty( obj.objects{i}.children )
-                        obj.objects{i}.update_children( varargin{1} );
-                    end
+                % Update its children
+                if ~isempty( obj.objects{i}.children )
+                    obj.objects{i}.update_children( varargin{:} );
                 end
             end
 
@@ -277,20 +257,11 @@ classdef VehiCool < handle
             %  - obj.advance( varargin )
             %
 
-            % Advance to a specific step
-            if nargin == 2
-                % Update the objects
-                obj.update_objects( varargin{1} );
+            % Update the objects
+            obj.update_objects( varargin{:} );
 
-                % Update the camera
-                obj.camera.update( varargin{1} );
-            else
-                % Update the objects
-                obj.update_objects();
-
-                % Update the camera
-                obj.camera.update();
-            end
+            % Update the camera
+            obj.camera.update( varargin{:} );
 
         end
 
