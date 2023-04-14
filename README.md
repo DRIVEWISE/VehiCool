@@ -13,7 +13,7 @@ Hereafter a list of the implemented and upcoming features.
 - Visualize 2D racetracks.
 - Visualize 3D racetracks. (not tested)
 - Animate and/or save a video in post-processing.
-- Animate and/or save a video step-by-step. (not tested)
+- Animate and/or save a video step-by-step (i.e., one step at a time, as if it was attached to a simulation).
 
 ### Upcoming
 

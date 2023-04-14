@@ -158,12 +158,7 @@ classdef CameraObj < BaseObject
             camva( obj.ax, obj.view_angle );
 
             % Update the camera
-            switch nargin
-                case 2
-                    obj.update();
-                case 3
-                    obj.update( varargin{1} );
-            end
+            obj.update( varargin{:} );
 
         end
 

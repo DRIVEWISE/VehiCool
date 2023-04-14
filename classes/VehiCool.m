@@ -164,8 +164,7 @@ classdef VehiCool < handle
             %                     'on'.
             %  - 'StartStep'   -> index of the first step to plot. If it is not
             %                     provided, the current state is assumed to be
-            %                     the a vector of the form
-            %                     [x, y, z, a1, a2, a3].
+            %                     the a vector of the form 1 x num_states.
             %
             % Outputs
             % -------
@@ -273,7 +272,7 @@ classdef VehiCool < handle
             % ---------
             %  - tf            -> total animation time.
             %  - 'FrameRate'   -> frame rate of the animation. Default is 30.
-            %  - 'SampleTime'  -> sample time of the data. Default is 0.01.
+            %  - 'SampleTime'  -> sample time of the data. Default is 0.001.
             %  - 'FigSize'     -> size of the figure. Default is [960, 540].
             %  - 'ShowProgress'-> flag to show the progress bar or not. Default
             %                     is false.
@@ -294,7 +293,7 @@ classdef VehiCool < handle
             p = inputParser;
             addRequired( p, 'tf', @isnumeric );
             addParameter( p, 'FrameRate', 30, @isnumeric );
-            addParameter( p, 'SampleTime', 0.01, @isnumeric );
+            addParameter( p, 'SampleTime', 0.001, @isnumeric );
             addParameter( p, 'FigSize', [960, 540], @isnumeric );
             addParameter( p, 'ShowProgress', false, @islogical );
             addParameter( p, 'ShowFigure', 'on', @ischar );

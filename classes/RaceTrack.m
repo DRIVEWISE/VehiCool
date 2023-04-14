@@ -55,7 +55,7 @@ classdef RaceTrack < BaseTrack
     methods
 
         % Constructor
-        function obj = RaceTrack( left_margin, right_margin, kerb_width )
+        function obj = RaceTrack( left_margin, right_margin, varargin )
             % RaceTrack constructor.
             %
             % Arguments
@@ -64,7 +64,7 @@ classdef RaceTrack < BaseTrack
             %                    margin.
             %  - right_margin -> N x 2 array of X and Y coordinates of the right
             %                    margin.
-            %  - kerb_width   -> width of the kerb.
+            %  - 'KerbWidth'  -> width of the kerb. Default: 0.4.
             %
             % Outputs
             % -------
@@ -72,22 +72,31 @@ classdef RaceTrack < BaseTrack
             %
             % Usage
             % -----
-            %  - obj = RaceTrack( left_margin, right_margin, kerb_width )
+            %  - obj = RaceTrack( left_margin, right_margin, varargin )
             %
 
+            % Parse the inputs
+            p = inputParser;
+            addRequired( p, 'left_margin',  @isnumeric );
+            addRequired( p, 'right_margin', @isnumeric );
+            addParameter( p, 'KerbWidth', 0.4, @isnumeric );
+            parse( p, left_margin, right_margin, varargin{:} );
+
             % Create the centreline
-            obj.centreline = (left_margin + right_margin) ./ 2;
+            obj.centreline = (p.Results.left_margin + p.Results.right_margin) ./ 2;
 
             % Create the angles for the centreline
-            obj.angles = atan2( left_margin(:, 2) - right_margin(:, 2), ...
-                                left_margin(:, 1) - right_margin(:, 1) );
+            obj.angles = atan2( p.Results.left_margin(:, 2) - ...
+                                p.Results.right_margin(:, 2), ...
+                                p.Results.left_margin(:, 1) - ...
+                                p.Results.right_margin(:, 1) );
 
             % Create the offsets
-            obj.offsets = sqrt( sum( (right_margin - left_margin).^2, 2 ) ) ...
-                          ./ 2;
+            obj.offsets = sqrt( sum( (p.Results.right_margin -...
+                                      p.Results.left_margin).^2, 2 ) ) ./ 2;
 
             % Create the margins and kerbs
-            obj.create_track( kerb_width );
+            obj.create_track( p.Results.KerbWidth );
 
         end
 
