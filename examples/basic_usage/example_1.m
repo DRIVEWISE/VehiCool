@@ -51,7 +51,7 @@ scen.add_root_object( rf0 );
 
 %% Animate the scenario
 
-scen.animate( 10 );
+scen.animate( time_sim(end) );
 
 %% EoF
 
