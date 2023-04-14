@@ -26,8 +26,8 @@ Hereafter a list of the implemented and upcoming features.
 
 This library uses the following third-party libraries.
 
-- `madhouse-utils` (provided as a submodule of the library).
-- `ebertolazzi/Clothoids` (to be downloaded freely as a MATLAB package).
+- [`madhouse-utils`](https://github.com/DRIVEWISE/madhouse-utils) (provided as a submodule of the library).
+- [`ebertolazzi/Clothoids`](https://it.mathworks.com/matlabcentral/fileexchange/64849-ebertolazzi-clothoids) (to be downloaded freely as a MATLAB package).
 
 ## Quick setup
 
@@ -40,22 +40,22 @@ addpath( genpath( 'path/to/VehiCool' ) );
 then you can use the library by following this workflow example
 
 ```
-% Load the data
+%% Load the data
 ...
 
-% Define the scenario
+%% Define the scenario
 track = RaceTrack( left_margin, right_margin, 0.4 );
 cam   = CameraObj( camera_state, target_state );
-car   = VehicleObj( car_state, ...
-                    'STLPath', 'models/cars/Renault_5_Rallye_Edition/Renault_5_Rallye_Edition.stl' );
+car   = Object3D( car_state, ...
+                  'STLPath', 'models/cars/Renault_5_Rallye_Edition/Renault_5_Rallye_Edition.stl' );
 
-% Create and populate the scenario
+%% Create and populate the scenario
 scene = VehiCool();
 scene.set_track( track );
 scene.add_camera( cam );
-scene.add_object( car );
+scene.add_root_object( car );
 
-% Animate the scenario
+%% Animate the scenario
 scene.animate( time_sim(end) );
 ```
 
@@ -67,4 +67,4 @@ At the moment the documentation is not available. We are working on it. In the m
 
 ## Licence
 
-We release this library under the [BSD 2-Clause Licence](LICENSE).
+We release this library under the [BSD 2-Clause Licence](LICENCE).

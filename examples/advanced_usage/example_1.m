@@ -79,8 +79,8 @@ scen = VehiCool();
 
 % Add the objects to the scenario
 scen.set_track( track );
-scen.add_root_object( rf0 );
 scen.add_camera( camera );
+scen.add_root_object( rf0 );
 
 %% Animate the scenario
 
