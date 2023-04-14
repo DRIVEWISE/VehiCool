@@ -75,3 +75,13 @@ for i = 1 : length( time_sim )
                                    % figure
 
 end
+
+%% EoF
+
+% User:
+% I see, so VehiCool is actually able to do this. However, I bet it is not
+% capable of multi-body modelling, right?
+%
+% VehiCool developers:
+% Wrong! VehiCool is able to model multi-body systems. Just look at the examples
+% in the advanced_usage folder.

@@ -124,3 +124,13 @@ for i = 1 : length( time_sim )
                                    % figure
 
 end
+
+%% EoF
+
+% User:
+% Ok VehiCool developers, I've changed my mind. It looks very easy to use and
+% powerful! I will use it for my next project.
+%
+% VehiCool developers:
+% Great! We are happy to hear that. We hope you will enjoy using VehiCool. Stay
+% tuned for more updates!

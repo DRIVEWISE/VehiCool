@@ -90,3 +90,13 @@ scen.add_root_object( rf0 );
 %% Animate the scenario
 
 scen.animate( time_sim(end) );
+
+%% EoF
+
+% User:
+% Quite impressive, VehiCool developers. Still, I am certain that it is very
+% complex to animate this multi-body system during the simulation!
+%
+% VehiCool developers:
+% Thing again, user. Take a look at the file example_2.m in this folder and see
+% if we can change your mind!

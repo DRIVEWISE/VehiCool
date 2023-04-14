@@ -52,3 +52,13 @@ scen.add_root_object( rf0 );
 %% Animate the scenario
 
 scen.animate( 10 );
+
+%% EoF
+
+% User:
+% This is cool, but what if I want to animate the scenario during the
+% simulation?
+%
+% VehiCool developers:
+% Fear not, VehiCool is able to do that too! Look at the file example_2.m in
+% this folder for more details.
