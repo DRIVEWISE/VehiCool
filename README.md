@@ -68,3 +68,18 @@ At the moment the documentation is not available. We are working on it. In the m
 ## Licence
 
 We release this library under the [BSD 2-Clause License](LICENSE).
+
+## Authorship
+
+Throught this library we use the following scheme for authorship.
+
+- Authors:
+  - Name Surname of author 1
+  - Name Surname of author 2
+  - ...
+- Contributors:
+  - Name Surname of contributor 1
+  - Name Surname of contributor 2
+  - ...
+
+An author is the one who wrote the code. A contributor is the one who contributed to the code by providing suggestions, bug reports, etc. We decided to use this scheme to acknowledge the contribution of all the people who helped us to develop this library and to direct the users to the right person to contact in case of problems.
