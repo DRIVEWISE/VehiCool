@@ -2,6 +2,10 @@
 
 `VehiCool` is a MATLAB library to animate vehicles in 3D.
 
+It is currently under development. The current version is `0.1.0`, which is still in alpha stage.
+
+**Beware that the API may change in the future.**
+
 ## Features
 
 Hereafter a list of the implemented and upcoming features.
@@ -77,9 +81,5 @@ Throught this library we use the following scheme for authorship.
   - Name Surname of author 1
   - Name Surname of author 2
   - ...
-- Contributors:
-  - Name Surname of contributor 1
-  - Name Surname of contributor 2
-  - ...
 
-An author is the one who wrote the code. A contributor is the one who contributed to the code by providing suggestions, bug reports, etc. We decided to use this scheme to acknowledge the contribution of all the people who helped us to develop this library and to direct the users to the right person to contact in case of problems.
+This is written in the header of each file. The order of the authors is the order of the contributions to the specific file.
