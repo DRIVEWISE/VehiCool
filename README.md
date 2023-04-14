@@ -63,8 +63,8 @@ For a more detailed example, please refer to the [`examples`](examples/README.md
 
 ## Documentation
 
-At the moment the documentation is not available. We are working on it. In the meantime, you can refer to the [`examples`](examples/README.md) folder and to the source code which is well documented.
+At the moment the documentation is not available. We are working on it. In the meantime, you can refer to the [`examples`](examples/README.md) folder and to the [`source code`](classes) which is well documented.
 
 ## Licence
 
-We release this library under the [BSD 2-Clause Licence](LICENCE).
+We release this library under the [BSD 2-Clause License](LICENSE).
