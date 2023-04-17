@@ -1,7 +1,6 @@
 %------------------------------------------------------------------------------%
 % Authors
 %  - Sebastiano Taddei.
-%  - Mattia Piazza.
 %------------------------------------------------------------------------------%
 
 classdef FollowerCamera < BaseCamera
@@ -12,14 +11,15 @@ classdef FollowerCamera < BaseCamera
     %
     % Properties
     % ----------
-    %  - ax         -> axis handle.
-    %  - state      -> camera state. It is a N x 3 matrix, where N is the number
-    %                  of samples and each row contains the camera position
-    %                  [x, y, z].
-    %  - target     -> handle of the target. It has to be a BaseObject object.
-    %  - projection -> camera projection. Options are 'perspective' and
-    %                  'orthographic'. Default is 'perspective'.
-    %  - view_angle -> camera viewing angle [deg]. Default is 40 deg.
+    %  - ax                -> axis handle.
+    %  - state             -> camera state. It is a N x 3 matrix, where N is the
+    %                         number of samples and each row contains the camera
+    %                         position [x, y, z].
+    %  - target            -> handle of the target. It has to be a BaseObject
+    %                         object.
+    %  - projection        -> camera projection. Options are 'perspective' and
+    %                         'orthographic'. Default is 'perspective'.
+    %  - view_angle        -> camera viewing angle [deg]. Default is 40 deg.
     %  - relative_position -> camera relative position w.r.t the target. Default
     %                         is [-10, 0, 6] (i.e., [x, y, z]).
     %
@@ -107,7 +107,8 @@ classdef FollowerCamera < BaseCamera
             %  - obj.create_state()
             %
 
-            % Get the target current transformation matrix
+            % Get the target current transformation matrix without the default
+            % transformation
             target_trans = obj.target.get_transform() / ...
                            obj.target.default_transform;
 

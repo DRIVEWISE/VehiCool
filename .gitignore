@@ -3,3 +3,6 @@ logs
 
 # Tests folders
 tests
+
+# MATLAB cache files
+*.asv

@@ -39,7 +39,7 @@ state_camera  = [x_rf0 - 10 * cos( yaw_rf0 ), ...
 target_camera = [x_rf0, y_rf0, z_rf0];
 
 % Create the camera
-camera = FollowerCamera( rf0, 'rel' );
+camera = FixedCamera( rf0, 'FixedPosition', [10, 10, 10] );
 
 % Create the scenario
 scen = VehiCool();

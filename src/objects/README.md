@@ -2,7 +2,7 @@
 
 This directory contains the various types of objects that can be represented in a scene.
 
-All the objects inherit from the [Object3D](../abstract/Object3D.m) class, which can be used by the user as a template for creating new objects and extend the existing functionality.
+All the objects inherit from the [BaseObject](../abstract/BaseObject/BaseObject.m) class, which can be used by the user as a template for creating new objects and extend the existing functionality.
 
 ## Object classes
 
