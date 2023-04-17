@@ -49,9 +49,12 @@ scen.animate( time_sim(end) );
 %% EoF
 
 % User:
-% This is cool, but what if I want to animate the scenario during the
-% simulation?
+% Wait a second, so I need a specific class for each object I want to add to the
+% scenario? What if the object I want is not present in the VehiCool library?
 %
 % VehiCool developers:
-% Fear not, VehiCool is able to do that too! Look at the file example_2.m in
-% this folder for more details.
+% Yes, that was the idea. The VehiCool library is not meant to be a complete
+% toolbox for the simulation of vehicle dynamics. It is just a tool to help
+% you visualize your data. If you want to add a new object to the scenario, you
+% need to create a new class that inherits from the corresponding BaseClass,
+% which is easir than it sounds!

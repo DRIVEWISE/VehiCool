@@ -44,9 +44,9 @@ scen.animate( time_sim(end) );
 %% EoF
 
 % User:
-% This is cool, but what if I want to animate the scenario during the
-% simulation?
+% I must admit, this is not the most exciting example. But creating a camera
+% is not the most exciting thing to do, either. The point is that VehiCool
+% is able to do that in an incredibly easy way, and that's what matters.
 %
 % VehiCool developers:
-% Fear not, VehiCool is able to do that too! Look at the file example_2.m in
-% this folder for more details.
+% Wait, weren't we supposed to be the ones to say that? Well, thank you user.
