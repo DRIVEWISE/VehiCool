@@ -30,20 +30,8 @@ rf0   = STLObject( state_rf0, 'InitTrans', rf0_T );
 rf0_traj = ScatterObject( state_rf0(:, 1:3), ...
                           'State',  zeros( size( state_rf0, 1 ), 6 ) );
 
-% Extract the initial state of the reference frame
-x_rf0   = state_rf0(:, 1);
-y_rf0   = state_rf0(:, 2);
-z_rf0   = state_rf0(:, 3);
-yaw_rf0 = state_rf0(:, 4);
-
-% Create the camera state and target state
-state_camera  = [x_rf0 - 10 * cos( yaw_rf0 ), ...
-                 y_rf0 - 10 * sin( yaw_rf0 ), ...
-                 z_rf0 + 6];
-target_camera = [x_rf0, y_rf0, z_rf0];
-
 % Create the camera
-camera = CameraObj( state_camera, target_camera );
+camera = FollowerCamera( rf0 );
 
 % Create the scenario
 scen = VehiCool();

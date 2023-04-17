@@ -64,20 +64,8 @@ wheel_fl = STLObject( state_wheel_f(1, :),                                      
                       'InitTrans', T_wheel_fl,                                                                      ...
                       'Parent', rf0 );
 
-% Extract the initial state of the reference frame
-x_rf0   = state_rf0(:, 1);
-y_rf0   = state_rf0(:, 2);
-z_rf0   = state_rf0(:, 3);
-yaw_rf0 = state_rf0(:, 4);
-
-% Create the camera state and target state
-state_camera  = [x_rf0 - 10 * cos( yaw_rf0 ), ...
-                 y_rf0 - 15 * sin( yaw_rf0 ), ...
-                 z_rf0 + 6];
-target_camera = [x_rf0, y_rf0, z_rf0];
-
 % Create the camera
-camera = CameraObj( state_camera(1, :), target_camera(1, :) );
+camera = FollowerCamera( rf0 );
 
 % Create the scenario
 scen = VehiCool();
@@ -108,12 +96,6 @@ for i = 1 : length( time_sim )
     % Update the state of the front wheels
     wheel_fr.set_state( state_wheel_f(i, :) );
     wheel_fl.set_state( state_wheel_f(i, :) );
-
-    % Update the state of the camera
-    camera.set_state( state_camera(i, :) );
-
-    % Update the target of the camera
-    camera.set_target( target_camera(i, :) );
 
     % Update the scenario
     scen.advance();

@@ -26,18 +26,6 @@ track = RaceTrack( adria.left_margin, adria.right_margin );
 rf0_T = makehgtform( 'scale', 0.05 ); % initial transformation matrix
 rf0   = STLObject( state_rf0, 'InitTrans', rf0_T );
 
-% Extract the initial state of the reference frame
-x_rf0   = state_rf0(:, 1);
-y_rf0   = state_rf0(:, 2);
-z_rf0   = state_rf0(:, 3);
-yaw_rf0 = state_rf0(:, 4);
-
-% Create the camera state and target state
-state_camera  = [x_rf0 - 10 * cos( yaw_rf0 ), ...
-                 y_rf0 - 10 * sin( yaw_rf0 ), ...
-                 z_rf0 + 6];
-target_camera = [x_rf0, y_rf0, z_rf0];
-
 % Create the camera
 camera = FixedCamera( rf0, 'FixedPosition', [10, 10, 10] );
 
