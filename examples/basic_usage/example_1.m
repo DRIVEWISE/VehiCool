@@ -24,7 +24,7 @@ track = RaceTrack( adria.left_margin, adria.right_margin );
 
 % Create the main reference frame
 rf0_T = makehgtform( 'scale', 0.05 ); % initial transformation matrix
-rf0   = Object3D( state_rf0, 'InitTrans', rf0_T );
+rf0   = STLObject( state_rf0, 'InitTrans', rf0_T );
 
 % Extract the initial state of the reference frame
 x_rf0   = state_rf0(:, 1);
@@ -39,7 +39,7 @@ state_camera  = [x_rf0 - 10 * cos( yaw_rf0 ), ...
 target_camera = [x_rf0, y_rf0, z_rf0];
 
 % Create the camera
-camera = CameraObj( state_camera, target_camera );
+camera = FollowerCamera( rf0 );
 
 % Create the scenario
 scen = VehiCool();

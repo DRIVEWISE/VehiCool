@@ -24,7 +24,11 @@ track = RaceTrack( adria.left_margin, adria.right_margin );
 
 % Create the main reference frame
 rf0_T = makehgtform( 'scale', 0.05 ); % initial transformation matrix
-rf0   = STLObject( state_rf0(1, :), 'InitTrans', rf0_T );
+rf0   = STLObject( state_rf0, 'InitTrans', rf0_T );
+
+% Create a fixed trajectory of the reference frame
+rf0_traj = ScatterObject( state_rf0(:, 1:3), ...
+                          'State',  zeros( size( state_rf0, 1 ), 6 ) );
 
 % Extract the initial state of the reference frame
 x_rf0   = state_rf0(:, 1);
@@ -39,7 +43,7 @@ state_camera  = [x_rf0 - 10 * cos( yaw_rf0 ), ...
 target_camera = [x_rf0, y_rf0, z_rf0];
 
 % Create the camera
-camera = CameraObj( state_camera(1, :), target_camera(1, :) );
+camera = CameraObj( state_camera, target_camera );
 
 % Create the scenario
 scen = VehiCool();
@@ -48,40 +52,18 @@ scen = VehiCool();
 scen.set_track( track );
 scen.add_camera( camera );
 scen.add_root_object( rf0 );
+scen.add_root_object( rf0_traj );
 
-%% Animate the scenario one step at a time
+%% Animate the scenario
 
-% Render the scenario
-[fig, ax] = scen.render();
-
-% Animate the scenario
-for i = 1 : length( time_sim )
-
-    % Update the state of the reference frame
-    rf0.set_state( state_rf0(i, :) );
-
-    % Update the state of the camera
-    camera.set_state( state_camera(i, :) );
-
-    % Update the target of the camera
-    camera.set_target( target_camera(i, :) );
-
-    % Update the scenario
-    scen.advance();
-
-    % Draw the scenario
-    drawnow limitrate nocallbacks; % this limits the frame rate to 20 fps and
-                                   % avoids unwanted interactions with the
-                                   % figure
-
-end
+scen.animate( time_sim(end) );
 
 %% EoF
 
 % User:
-% I see, so VehiCool is actually able to do this. However, I bet it is not
-% capable of multi-body modelling, right?
+% This is cool, but what if I want to animate the scenario during the
+% simulation?
 %
 % VehiCool developers:
-% Wrong! VehiCool is able to model multi-body systems. Just look at the examples
-% in the advanced_usage folder.
+% Fear not, VehiCool is able to do that too! Look at the file example_2.m in
+% this folder for more details.

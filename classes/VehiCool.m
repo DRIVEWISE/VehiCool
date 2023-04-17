@@ -125,27 +125,26 @@ classdef VehiCool < handle
         end
 
         % Plot the objects
-        function plot_objects( obj, ax, varargin )
+        function plot_objects( obj, ax )
             % Plot the objects of the scenario.
             %
             % Arguments
             % ---------
-            %  - ax          -> axes handle.
-            %  - varargin{1} -> index of the current step.
+            %  - ax -> axes handle.
             %
             % Usage
             % -----
-            %  - obj.plot_objects( ax, varargin )
+            %  - obj.plot_objects( ax )
             %
 
             % Unravel the tree of objects
             for i = 1:length( obj.objects )
                 % Plot the root object
-                obj.objects{i}.plot( ax, varargin{:} );
+                obj.objects{i}.plot( ax );
 
                 % Plot its children
                 if ~isempty( obj.objects{i}.children )
-                    obj.objects{i}.plot_children( ax, varargin{:} );
+                    obj.objects{i}.plot_children( ax );
                 end
             end
 
@@ -157,12 +156,9 @@ classdef VehiCool < handle
             %
             % Arguments
             % ---------
-            %  - 'FigSize'     -> size of the figure. Default is [960, 540].
-            %  - 'ShowFigure'  -> flag to show the figure or not. Default is
-            %                     'on'.
-            %  - 'StartStep'   -> index of the first step to plot. If it is not
-            %                     provided, the current state is assumed to be
-            %                     the a vector of the form 1 x num_states.
+            %  - 'FigSize'    -> size of the figure. Default is [960, 540].
+            %  - 'ShowFigure' -> flag to show the figure or not. Default is
+            %                    'on'.
             %
             % Outputs
             % -------
@@ -178,7 +174,6 @@ classdef VehiCool < handle
             p = inputParser;
             addParameter( p, 'FigSize', [960, 540], @isnumeric );
             addParameter( p, 'ShowFigure', 'on', @ischar );
-            addParameter( p, 'StartStep', 0, @isnumeric );
             parse( p, varargin{:} );
 
             % Create the figure and axes
@@ -199,66 +194,78 @@ classdef VehiCool < handle
             % Plot the track
             obj.track.plot( ax );
 
-            % Plot the camera
-            if p.Results.StartStep == 0
-                obj.camera.plot( ax );
-            else
-                obj.camera.plot( ax, p.Results.StartStep );
-            end
-
             % Plot the objects
-            if p.Results.StartStep == 0
-                obj.plot_objects( ax );
-            else
-                obj.plot_objects( ax, p.Results.StartStep );
-            end
+            obj.plot_objects( ax );
+
+            % Plot the camera
+            obj.camera.plot( ax );
 
         end
 
         % Update the objects
-        function update_objects( obj, varargin )
+        function update_objects( obj )
             % Update the objects of the scenario.
-            %
-            % Arguments
-            % ---------
-            %  - varargin{1} -> index of the current step.
             %
             % Usage
             % -----
-            %  - obj.update_objects( varargin )
+            %  - obj.update_objects()
             %
 
             % Update the objects
             for i = 1:length( obj.objects )
                 % Update the root object
-                obj.objects{i}.update( varargin{:} );
+                obj.objects{i}.update();
 
                 % Update its children
                 if ~isempty( obj.objects{i}.children )
-                    obj.objects{i}.update_children( varargin{:} );
+                    obj.objects{i}.update_children();
                 end
             end
 
         end
 
-        % Advance the scenario
-        function advance( obj, varargin )
-            % Advance the scenario by one step.
+        % Skip the scenario to the given index
+        function skip_to( obj, idx )
+            % Skip the scenario to the given index.
             %
             % Arguments
             % ---------
-            %  - varargin{1} -> index of the current step.
+            %  - idx -> index to skip to.
             %
             % Usage
             % -----
-            %  - obj.advance( varargin )
+            %  - obj.skip( index )
             %
 
             % Update the objects
-            obj.update_objects( varargin{:} );
+            for i = 1:length( obj.objects )
+                % Update the root object
+                obj.objects{i}.skip( idx );
+
+                % Update its children
+                if ~isempty( obj.objects{i}.children )
+                    obj.objects{i}.skip_children( idx );
+                end
+            end
+
+        end
+
+
+
+        % Advance the scenario
+        function advance( obj )
+            % Advance the scenario by one step.
+            %
+            % Usage
+            % -----
+            %  - obj.advance()
+            %
+
+            % Update the objects
+            obj.update_objects();
 
             % Update the camera
-            obj.camera.update( varargin{:} );
+            obj.camera.update();
 
         end
 
@@ -308,8 +315,7 @@ classdef VehiCool < handle
 
             % Render the scenario
             [fig, ax] = obj.render( 'FigSize', p.Results.FigSize, ...
-                                    'ShowFigure', p.Results.ShowFigure, ...
-                                    'StartStep', 1 );
+                                    'ShowFigure', p.Results.ShowFigure );
 
             % Create the video file if needed
             if p.Results.SaveVideo
@@ -327,14 +333,16 @@ classdef VehiCool < handle
 
             % Simulate the scenario
             idx = 1;
-            tic
             for t = 0:p.Results.SampleTime:tf
 
                 % Simulate the scenario only at the specified frame rate
                 if mod( t, frame_time ) == 0
+                    % Skip to the current index
+                    obj.skip_to( idx );
+
                     % Advance the scenario
                     s_t = tic;
-                    obj.advance( idx );
+                    obj.advance();
                     drawnow nocallbacks;
                     e_t = toc( s_t );
 
@@ -355,11 +363,10 @@ classdef VehiCool < handle
                     progress_bar( 0, tf, p.Results.SampleTime, t, 1 );
                 end
 
-                % Increment the index
+                % Increase the index
                 idx = idx + 1;
 
             end
-            toc
 
             % Stop holding onto the figure
             hold( ax, 'off' );
