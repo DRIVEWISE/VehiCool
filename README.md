@@ -67,7 +67,7 @@ For a more detailed example, please refer to the [`examples`](examples/README.md
 
 ## Documentation
 
-At the moment the documentation is not available. We are working on it. In the meantime, you can refer to the [`examples`](examples/README.md) folder and to the [`source code`](classes) which is well documented.
+At the moment the documentation is not available. We are working on it. In the meantime, you can refer to the [`examples`](examples/README.md) folder and to the [`source code`](src) which is well documented.
 
 ## Licence
 
