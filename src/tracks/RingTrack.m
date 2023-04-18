@@ -18,16 +18,24 @@ classdef RingTrack < BaseTrack
     %
     % Methods
     % -------
-    %  - RingTrack( radius, num_rings, varargin ) -> constructor.
-    %  - create_track( radius, num_rings, ...
-    %                  ring_width, kerb_width )   -> create the centrelines, the
-    %                                                margins, and the kerbs.
-    %  - plot( ax )                               -> plot the ringtrack.
+    %  - RingTrack( radius, num_rings, varargin )  -> constructor.
+    %  - create_ring( radius, ring_width, ...
+    %                 kerb_width, elevation )      -> create the centrelines,
+    %                                                 the margins, and the
+    %                                                 kerbs.
+    %  - create_track( radius, num_rings,      ...
+    %                  ring_width, kerb_width, ...
+    %                  delta_elev )                -> create the centrelines,
+    %                                                 the margins, and the
+    %                                                 kerbs.
+    %  - plot( ax )                                -> plot the ringtrack.
     %
     % Usage
     % -----
     %  - obj = RingTrack( radius, num_rings, varargin )
-    %  - obj.create_track( kerb_width )
+    %  - obj.create_ring( radius, ring_width, kerb_width, elevation )
+    %  - obj.create_track( radius, num_rings, ring_width, kerb_width, ...
+    %                      delta_elev )
     %  - obj.plot( ax )
     %
 
@@ -94,7 +102,7 @@ classdef RingTrack < BaseTrack
             %
             % Usage
             % -----
-            %  - obj.create_ring( radius, ring_width, kerb_width )
+            %  - obj.create_ring( radius, ring_width, kerb_width, elevation )
             %
 
             % Compute the line between the left and right kerbs
@@ -165,7 +173,8 @@ classdef RingTrack < BaseTrack
             %
             % Usage
             % -----
-            %  - obj.create_track( kerb_width )
+            %  - obj.create_track( radius, num_rings, ring_width, ...
+            %                      kerb_width, delta_elev )
             %
 
             % Create the rings
