@@ -23,14 +23,13 @@ classdef RaceTrack < BaseTrack
     % Methods
     % -------
     %  - RaceTrack( left_margin, right_margin, ...
-    %               kerb_width )                   -> constructor.
-    %  - create_track( kerb_width )                -> create the margins and
-    %                                                 kerbs.
+    %               varargin )                     -> constructor.
+    %  - create_track( kerb_width )                -> create margins and kerbs.
     %  - plot( ax )                                -> plot the racetrack.
     %
     % Usage
     % -----
-    %  - obj = RaceTrack( left_margin, right_margin, kerb_width )
+    %  - obj = RaceTrack( left_margin, right_margin, varargin )
     %  - obj.create_track( kerb_width )
     %  - obj.plot( ax )
     %
@@ -166,8 +165,8 @@ classdef RaceTrack < BaseTrack
             sample_sf    = 10; % samples reserved for the start/finish line
             sample_start = 1;
             sample_end   = floor( (size( obj.left_kerb, 1 ) - sample_skip - ...
-                                   sample_sf - sample_start) / sample_skip ) *          ...
-                           sample_skip + sample_start;
+                                   sample_sf - sample_start) /              ...
+                                   sample_skip ) * sample_skip + sample_start;
 
             % Get the edges of the racetrack
             x_min = min( [obj.left_margin(:, 1); obj.right_margin(:, 1)] );
@@ -188,7 +187,7 @@ classdef RaceTrack < BaseTrack
                    'FaceLighting', 'none',                   ...
                    'FaceAlpha', 1.0 );
 
-            % Plot the kerbs
+            % Plot the track
             colour_flag = true;
             for i = sample_start:sample_skip:sample_end
 
