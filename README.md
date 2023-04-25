@@ -41,7 +41,9 @@ addpath( genpath( 'path/to/VehiCool' ) );
 then you can use the library by following this workflow example
 
 ```
+%------------------------------------------------------------------------------%
 %% Load the data
+%------------------------------------------------------------------------------%
 ...
 
 %% Define the scenario
