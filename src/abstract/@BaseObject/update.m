@@ -24,4 +24,7 @@ function update( obj )
     % Apply the transform
     obj.transform( T );
 
+    % Increment the index
+    obj.idx = obj.idx + 1;
+
 end

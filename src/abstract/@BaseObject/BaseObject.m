@@ -26,6 +26,10 @@ classdef BaseObject < handle
     %                         sequence is defined by the 'RotSeq' parameter
     %                         defined in the constructor.
     %  - idx               -> the index of the current state.
+    %  - deferred_update   -> multiple of the simulation sampling time to
+    %                         update the object. This enables asynchronous
+    %                         updates of objects. It must be a positive integer.
+    %                         Default is 1.
     %  - rot_seq           -> the rotation sequence. It is a string of 3
     %                         characters, where each character can be 'x', 'y'
     %                         or 'z'. The rotation sequence is defined by the
@@ -83,6 +87,8 @@ classdef BaseObject < handle
         children          % list of the handles to child objects
         state             % the state of the object
         idx               % the index of the current state
+        deferred_update   % multiple of the simulation sampling time to update
+                          % the object
         rot_seq           % the rotation sequence
         descriptor        % the descriptor representing the object
         patch_transform   % the transform object for the patch
@@ -93,7 +99,7 @@ classdef BaseObject < handle
     %% Methods - abstract
     methods (Abstract)
 
-        create_descriptor( obj ) % create the object's descriptor
+        out = create_descriptor( obj ) % create the object's descriptor
 
     end
 
@@ -106,22 +112,29 @@ classdef BaseObject < handle
             %
             % Arguments
             % ---------
-            %  - state        -> the state of the object. It is a N x 3 matrix,
-            %                    where N is the number of samples and each row
-            %                    contains the object state
-            %                    [x, y, z, a1, a2, a3]. a1, a2, a3 are generic
-            %                    angles that can be used to represent the object
-            %                    orientation. The rotation sequence is defined
-            %                    by the 'RotSeq' parameter defined in the
-            %                    constructor.
-            %  - 'InitTrans'  -> the initial transformation for the STL. It is a
-            %                    4 x 4 transformation matrix. Default is eye(4).
-            %  - 'RotSeq'     -> rotation sequence for the transformations. It
-            %                    is a string of 3 characters, where each
-            %                    character can be 'x', 'y' or 'z'. The rotation
-            %                    sequence is defined by the 'RotSeq' parameter
-            %                    defined in the constructor. Default is 'zxy'.
-            %  - 'Parent'     -> handle of the parent object. Default is [].
+            %  - state            -> the state of the object. It is a N x 3
+            %                        matrix, where N is the number of samples
+            %                        and each row contains the object state
+            %                        [x, y, z, a1, a2, a3]. a1, a2, a3 are
+            %                        generic angles that can be used to
+            %                        represent the object orientation. The
+            %                        rotation sequence is defined by the
+            %                        'RotSeq' parameter defined in the
+            %                        constructor.
+            %  - 'DeferredUpdate' -> multiple of the simulation sampling time to
+            %                        update the object. This enables
+            %                        asynchronous updates of objects. It must be
+            %                        a positive integer. Default is 1.
+            %  - 'InitTrans'      -> the initial transformation for the STL. It
+            %                        is a 4 x 4 transformation matrix. Default
+            %                        is eye(4).
+            %  - 'RotSeq'         -> rotation sequence for the transformations.
+            %                        It is a string of 3 characters, where each
+            %                        character can be 'x', 'y' or 'z'. The
+            %                        rotation sequence is defined by the
+            %                        'RotSeq' parameter defined in the %
+            %                        constructor. Default is 'zxy'.
+            %  - 'Parent'         -> handle of the parent object. Default is [].
             %
             % Outputs
             % -------
@@ -135,6 +148,7 @@ classdef BaseObject < handle
             % Parse the inputs
             p = inputParser;
             addRequired( p, 'state', @isnumeric );
+            addParameter( p, 'DeferredUpdate', 1, @(x) isnumeric(x) && x > 0 );
             addParameter( p, 'InitTrans', eye(4), @isnumeric );
             addParameter( p, 'RotSeq', 'zxy', @ischar );
             addParameter( p, 'Parent', [], @(x) or( isa( x, 'BaseObject' ), isempty( x ) ) );
@@ -143,6 +157,7 @@ classdef BaseObject < handle
             % Set the object properties
             obj.state             = p.Results.state;
             obj.idx               = 1;
+            obj.deferred_update   = p.Results.DeferredUpdate;
             obj.default_transform = p.Results.InitTrans;
             rot_seq               = lower( p.Results.RotSeq );
             obj.rot_seq           = {[rot_seq(1), 'rotate'], ...
@@ -226,20 +241,11 @@ classdef BaseObject < handle
         % Skip to a specific state
         skip( obj, idx );
 
-        % Skip the object's children
-        skip_children( obj, idx );
-
         % Plot the object
         plot( obj, ax );
 
-        % Plot the object's children
-        plot_children( obj, ax );
-
         % Update the object's position and orientation
         update( obj );
-
-        % Update the object's children
-        update_children( obj );
 
     end
 

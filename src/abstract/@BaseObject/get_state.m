@@ -15,11 +15,11 @@ function out = get_state( obj )
     %  - out = obj.get_state()
     %
 
+    % If the state is composed of a single sample, return it
     if size( obj.state, 1 ) == 1
         out = obj.state;
     else
-        out     = obj.state( obj.idx, : );
-        obj.idx = obj.idx + 1;
+        out = obj.state( obj.idx, : );
     end
 
 end

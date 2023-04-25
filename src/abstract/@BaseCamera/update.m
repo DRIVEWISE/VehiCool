@@ -17,7 +17,10 @@ function update( obj )
 
     % Get the current target position
     curr_target = obj.get_target();
-    curr_target = curr_target(1, 1:3);
+    curr_target = curr_target(1, 1:3); % this 1 is here because get_target()
+                                       % returns a 1 x 6 array, ensuring that
+                                       % under any circumstances the target will
+                                       % have only one row.
 
     % Set camera state
     campos( obj.ax, curr_state );

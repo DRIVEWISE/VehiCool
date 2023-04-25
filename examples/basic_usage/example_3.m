@@ -27,8 +27,7 @@ rf0_T = makehgtform( 'scale', 0.05 ); % initial transformation matrix
 rf0   = STLObject( state_rf0, 'InitTrans', rf0_T );
 
 % Create a fixed trajectory of the reference frame
-rf0_traj = ScatterObject( state_rf0(:, 1:3), ...
-                          'State',  zeros( size( state_rf0, 1 ), 6 ) );
+rf0_traj = ScatterObject( state_rf0(:, 1:3) );
 
 % Create the camera
 camera = FollowerCamera( rf0 );

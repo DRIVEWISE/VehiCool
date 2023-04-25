@@ -5,9 +5,9 @@
 
 classdef RDFTrack < BaseTrack
     %% RDFTrack
-    % This class handles the creation of a RDFtrack object. It contains all the
+    % This class handles the creation of an RDFtrack object. It contains all the
     % information about the map of the RDFtrack. A RDFtrack is a track
-    % which is defined by a RDF file.
+    % which is defined by an RDF file.
     %
     % Disclaimer
     % ----------
