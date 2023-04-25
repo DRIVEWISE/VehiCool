@@ -101,7 +101,8 @@ function animate( obj, tf, varargin )
 
         % Advance the progress bar
         if p.Results.ShowProgress
-            progress_bar( 0, tf, p.Results.SampleTime, t, 1 );
+            progress_bar( t, tf, 0, p.Results.SampleTime, ...
+                          'Type', 'BarPercentage' );
         end
 
         % Increase the index
