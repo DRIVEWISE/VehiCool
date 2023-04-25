@@ -6,7 +6,7 @@
 %% Prepare the workspace
 
 % Clear the workspace
-clear all; close all; clc;
+clear; close all; clc;
 
 % Add the path to the VehiCool library
 addpath( genpath( '../../' ) );
