@@ -82,7 +82,7 @@ for i = 1 : length( time_sim )
     rf0.set_state( state_rf0(i, :) );
 
     % Update the scenario using the advance() method
-    scen.advance();
+    scen.advance( i );
 
     % Draw the scenario
     drawnow limitrate nocallbacks; % this limits the frame rate to 20 fps and

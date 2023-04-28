@@ -17,9 +17,10 @@ addpath( genpath( '../../' ) );
 %% Load the data
 %------------------------------------------------------------------------------%
 
-load( '../data/adria.mat' );     % racetrack data
-load( '../data/state_rf0.mat' ); % state of the main reference frame
-load( '../data/time_sim.mat' );  % time vector of the simulation
+load( '../data/adria.mat' );      % racetrack data
+load( '../data/state_rf0.mat' );  % state of the main reference frame
+load( '../data/trajectory.mat' ); % trajectory of the vehicle
+load( '../data/time_sim.mat' );   % time vector of the simulation
 
 %------------------------------------------------------------------------------%
 %% Create the scenario
@@ -42,22 +43,31 @@ track = RaceTrack( adria.left_margin, adria.right_margin );
 rf0_T = makehgtform( 'scale', 0.05 ); % initial transformation matrix
 rf0   = STLObject( state_rf0, 'InitTrans', rf0_T );
 
-% Create the camera using the FollowerCamera class. This class enables you to
-% render a camera that follows a given object. The only thing you need to do is
-% to provide the object to follow.
-camera = FollowerCamera( rf0, 'Delay', 0.1 );
+% Create a dynamic trajectory of the reference frame using the ScatterObject
+% class. This class enables you to render any object that is defined by a set
+% of points. The only thing you need to do is to provide the points as a N x 3
+% matrix where each row is a point. By setting the “DeferredUpdate” property to
+% 80, we tell the object to update the graphics every 80 time steps.
+rf0_traj = ScatterObject( trajectory, 'DeferredUpdate',  80 );
+
+% Create the camera using the BirdeyeCamera class. This class enables you to
+% render a camera that follows a given object from the top. The only thing you
+% need to do is to provide the object to follow.
+camera = BirdeyeCamera( rf0_traj );
 
 % Create the scenario using the VehiCool class. This is the main class of the
 % entire library.
 scen = VehiCool();
 
 % Add the objects to the scenario
-scen.set_track( track );     % set the racetrack, we use “set” because every
-                             % scenario has only one racetrack
-scen.add_camera( camera );   % add the camera, which in theory could be more
-                             % than one
-scen.add_root_object( rf0 ); % add the main reference frame as a root object,
-                             % which in theory could be more than one
+scen.set_track( track );          % set the racetrack, we use “set” because
+                                  % every scenario has only one racetrack
+scen.add_camera( camera );        % add the camera, which in theory could be
+                                  % more than one
+scen.add_root_object( rf0 );      % add the main reference frame as a root
+                                  % object
+scen.add_root_object( rf0_traj ); % add the trajectory of the main reference
+                                  % frame as a root object
 
 % Note
 % The terminology “root object” is used to indicate an object that is not
@@ -74,16 +84,20 @@ scen.add_root_object( rf0 ); % add the main reference frame as a root object,
 % Animate the scenario using the animate method. This method takes as input the
 % final time of the simulation. The scenario will be animated from time 0 to
 % time time_sim(end).
-scen.animate( time_sim(end) );
+scen.animate( time_sim(end), 'FigSize', [960, 960] );
 
 %------------------------------------------------------------------------------%
 %% End of file
 %------------------------------------------------------------------------------%
 
 % User:
-% This is cool, but what if I want to animate the scenario during the
-% simulation?
+% You are telling me that the birdeye camera will always frame the target?
+% Awesome! I did notice some stuttering though, is there a way to fix that?
 %
 % VehiCool developers:
-% Fear not, VehiCool is able to do that too! Look at the file example_2.m in
-% this folder for more details.
+% Absolutely! The stuttering is due to the fact that the camera is following
+% the target instantaneously. This means that the camera will always be at the
+% same position of the target. This is not a problem if the target is smoothly,
+% but if the target is not smooth, the camera will stutter. To fix this, you
+% can use the 'Delay' property of the BirdeyeCamera class. This property
+% specifies the delay of the camera with respect to the target.

@@ -16,6 +16,7 @@ classdef VehiCool < handle
     %  - objects     -> cell array of root objects in the scenario.
     %  - sample_time -> sample time of the data.
     %  - frame_rate  -> frame rate of the animation.
+    %  - palette     -> colour palette for every plot in the scene.
     %
     % Methods
     % -------
@@ -23,11 +24,18 @@ classdef VehiCool < handle
     %  - set_track( track )             -> set the track of the scenario.
     %  - add_camera( camera )           -> add a camera to the scenario.
     %  - add_root_object( root_object ) -> add a root object to the scenario.
-    %  - plot_objects( ax, varargin )   -> plot the objects of the scenario.
     %  - render( varargin )             -> render the scenario.
-    %  - update_objects( varargin )     -> update the objects of the scenario.
-    %  - advance( varargin )            -> advance the scenario by one step.
+    %  - advance( simulation_step )     -> advance the scenario by one step.
     %  - animate( tf, varargin )        -> animate the scenario.
+    %
+    % Methods - static
+    % ----------------
+    %  - plot_objects( objects, ax )       -> plot the objects of the scenario.
+    %  - update_objects( objects, ...
+    %                    simulation_step ) -> update the objects of the
+    %                                         scenario.
+    %  - skip_to( objects, idx )           -> skip the scenario to the given
+    %                                         index.
     %
     % Usage
     % -----
@@ -35,11 +43,12 @@ classdef VehiCool < handle
     %  - obj.set_track( track )
     %  - obj.add_camera( camera )
     %  - obj.add_root_object( object )
-    %  - obj.plot_objects( ax, varargin )
     %  - obj.render( varargin )
-    %  - obj.update_objects( varargin )
-    %  - obj.advance( varargin )
+    %  - obj.advance( simulation_step )
     %  - obj.animate( tf, varargin )
+    %  - VehiCool.plot_objects( objects, ax )
+    %  - VehiCool.update_objects( objects, simulation_step )
+    %  - VehiCool.skip_to( objects, idx )
     %
 
     %% Properties - all private
@@ -50,6 +59,7 @@ classdef VehiCool < handle
         objects     % cell array of root objects in the scenario
         sample_time % sample time of the data
         frame_rate  % frame rate of the animation
+        palette     % colour palette for every plot in the scene
 
     end
 
@@ -57,8 +67,16 @@ classdef VehiCool < handle
     methods
 
         % Constructor
-        function obj = VehiCool()
+        function obj = VehiCool( varargin )
             % VehiCool constructor.
+            %
+            % Arguments
+            % ---------
+            %  - 'ColourPalette' -> the colour palette to apply to all objects
+            %                       in the scene (where applicable). It can be
+            %                       any of the MATLAB's defaults (e.g.,
+            %                       'parula') or an M x 3 matrix of RGB
+            %                       triplets.
             %
             % Outputs
             % -------
@@ -69,7 +87,13 @@ classdef VehiCool < handle
             %  - obj = VehiCool()
             %
 
-            % Useful ah?
+            % Parse the arguments
+            p = inputParser;
+            p.addParameter( 'ColourPalette', 'parula', @(x) ischar(x) || ismatrix(x) && size(x, 2) == 3 );
+            p.parse( varargin{:} );
+
+            % Set the colour palette
+            obj.palette = p.Results.ColourPalette;
 
         end
 
@@ -79,14 +103,21 @@ classdef VehiCool < handle
             %
             % Arguments
             % ---------
-            %  - track -> track to add to the scenario.
+            %  - track -> track to add to the scenario. It must be a subclass
+            %             of BaseTrack.
             %
             % Usage
             % -----
             %  - obj.set_track( track )
             %
 
-            obj.track = track;
+            % Parse the inputs
+            p = inputParser;
+            p.addRequired( 'track', @(x) isa(x, 'BaseTrack') );
+            p.parse( track );
+
+            % Set the track
+            obj.track = p.Results.track;
 
         end
 
@@ -96,14 +127,21 @@ classdef VehiCool < handle
             %
             % Arguments
             % ---------
-            %  - camera -> camera to add to the scenario.
+            %  - camera -> camera to add to the scenario. It must be a subclass
+            %              of BaseCamera.
             %
             % Usage
             % -----
             %  - obj.add_camera( camera )
             %
 
-            obj.camera = camera;
+            % Parse the inputs
+            p = inputParser;
+            p.addRequired( 'camera', @(x) isa(x, 'BaseCamera') );
+            p.parse( camera );
+
+            % Set the camera
+            obj.camera = p.Results.camera;
 
         end
 
@@ -113,14 +151,21 @@ classdef VehiCool < handle
             %
             % Arguments
             % ---------
-            %  - object -> object to add to the scenario.
+            %  - object -> object to add to the scenario. It must be a subclass
+            %              of BaseObject.
             %
             % Usage
             % -----
             %  - obj.add_root_object( object )
             %
 
-            obj.objects{end + 1} = object;
+            % Parse the inputs
+            p = inputParser;
+            p.addRequired( 'object', @(x) isa(x, 'BaseObject') );
+            p.parse( object );
+
+            % Add the object
+            obj.objects{end + 1} = p.Results.object;
 
         end
 

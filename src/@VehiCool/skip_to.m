@@ -10,21 +10,28 @@ function skip_to( objects, idx )
     % Arguments
     % ---------
     %  - objects -> cell array of objects to skip for.
-    %  - idx     -> index to skip to.
+    %  - idx     -> index to skip to. It must be an integer greater than or
+    %               equal to 1.
     %
     % Usage
     % -----
     %  - VehiCool.skip( objects, idx )
     %
 
+    % Parse the inputs
+    p = inputParser;
+    p.addRequired( 'objects', @iscell );
+    p.addRequired( 'idx',     @(x) floor(x) == x && x >= 1 );
+    p.parse( objects, idx );
+
     % Update the objects
-    for i = 1:length( objects )
+    for i = 1:length( p.Results.objects )
         % Update the root object
-        objects{i}.skip( idx );
+        p.Results.objects{i}.skip( p.Results.idx );
 
         % Update its children
-        if ~isempty( objects{i}.children )
-            VehiCool.skip_to( objects{i}.children, idx );
+        if ~isempty( p.Results.objects{i}.children )
+            VehiCool.skip_to( p.Results.objects{i}.children, p.Results.idx );
         end
     end
 

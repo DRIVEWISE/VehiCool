@@ -9,9 +9,10 @@ function [fig, ax] = render( obj, varargin )
     %
     % Arguments
     % ---------
-    %  - 'FigSize'    -> size of the figure. Default is [960, 540].
+    %  - 'FigSize'     -> 1 x 2 matrix containing the size of the figure (i.e.,
+    %                     [width, height]). Default is [960, 540].
     %  - 'ShowFigure' -> flag to show the figure or not. Default is
-    %                    'on'.
+    %                    'on'. Options are 'on' and 'off'.
     %
     % Outputs
     % -------
@@ -25,8 +26,8 @@ function [fig, ax] = render( obj, varargin )
 
     % Parse the inputs
     p = inputParser;
-    addParameter( p, 'FigSize', [960, 540], @isnumeric );
-    addParameter( p, 'ShowFigure', 'on', @ischar );
+    addParameter( p, 'FigSize', [960, 540], @(x) isnumeric( x ) && isequal( size( x ), [1, 2] ) );
+    addParameter( p, 'ShowFigure', 'on', @(x) ischar( x ) && ismember( x, {'on', 'off'} ) );
     parse( p, varargin{:} );
 
     % Create the figure and axes
@@ -37,8 +38,9 @@ function [fig, ax] = render( obj, varargin )
 
     % Set the figure properties
     hold( ax, 'on' );
-    pbaspect( ax, [1, 1. 1] ); % axis aspect ratio
-    daspect( ax, [1, 1, 1] );  % axis ticks aspect ratio
+    pbaspect( ax, [1, 1. 1] );   % axis aspect ratio
+    daspect( ax, [1, 1, 1] );    % axis ticks aspect ratio
+    colormap( ax, obj.palette ); % set the colormap
 
     % Set the scene lighting
     light( ax, 'Style', 'infinite' );

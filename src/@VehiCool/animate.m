@@ -12,16 +12,19 @@ function animate( obj, tf, varargin )
     %  - tf            -> total animation time.
     %  - 'FrameRate'   -> frame rate of the animation. Default is 30.
     %  - 'SampleTime'  -> sample time of the data. Default is 0.001.
-    %  - 'FigSize'     -> size of the figure. Default is [960, 540].
+    %  - 'FigSize'     -> 1 x 2 matrix containing the size of the figure (i.e.,
+    %                     [width, height]). Default is [960, 540].
     %  - 'ShowProgress'-> flag to show the progress bar or not. Default
     %                     is false.
     %  - 'ShowFigure'  -> flag to show the figure or not. Default is
-    %                     'on'.
+    %                     'on'. Options are 'on' and 'off'.
     %  - 'SaveVideo'   -> flag to save the video or not. Default is
     %                     false.
     %  - 'FileName'    -> name of the video file. Default is 'VehiCool'.
-    %  - 'FileFormat'  -> format of the video file. Default is 'MPEG-4'.
-    %  - 'FileQuality' -> quality of the video file. Default is 100.
+    %  - 'FileFormat'  -> format of the video file. Default is 'MPEG-4'. Any of
+    %                     the MATLAB's default formats can be used.
+    %  - 'FileQuality' -> quality of the video file expressed as a value in the
+    %                     range [0, 100]. Default is 100.
     %
     % Usage
     % -----
@@ -31,15 +34,15 @@ function animate( obj, tf, varargin )
     % Parse the inputs
     p = inputParser;
     addRequired( p, 'tf', @isnumeric );
-    addParameter( p, 'FrameRate', 30, @isnumeric );
-    addParameter( p, 'SampleTime', 0.001, @isnumeric );
-    addParameter( p, 'FigSize', [960, 540], @isnumeric );
+    addParameter( p, 'FrameRate', 30, @(x) isnumeric( x ) && x > 0 );
+    addParameter( p, 'SampleTime', 0.001, @(x) isnumeric( x ) && x > 0 );
+    addParameter( p, 'FigSize', [960, 540], @(x) isnumeric( x ) && isequal( size( x ), [1, 2] ) );
     addParameter( p, 'ShowProgress', false, @islogical );
-    addParameter( p, 'ShowFigure', 'on', @ischar );
+    addParameter( p, 'ShowFigure', 'on', @(x) ischar( x ) && ismember( x, {'on', 'off'} ) );
     addParameter( p, 'SaveVideo', false, @islogical );
     addParameter( p, 'FileName', 'VehiCool', @ischar );
     addParameter( p, 'FileFormat', 'MPEG-4', @ischar );
-    addParameter( p, 'FileQuality', 100, @isnumeric );
+    addParameter( p, 'FileQuality', 100, @(x) isnumeric( x ) && x >= 0 && x <= 100 );
     parse( p, tf, varargin{:} );
 
     % Check that SampleTime <= 1 / FrameRate

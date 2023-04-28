@@ -38,6 +38,10 @@ The file [`example_4.m`](basic_usage/example_4.m) shows how to use the library t
 
 The file [`example_5.m`](basic_usage/example_5.m) shows how to use the library to create a simple object and animate it in post-processing, while plotting a dynamic trajectory that is updated asynchronously.
 
+### Example 6: single-body object with a trajectory (with deferred updates) and a birdeye camera in post-processing
+
+The file [`example_6.m`](basic_usage/example_6.m) shows how to use the library to create a simple object and animate it in post-processing, while plotting a dynamic trajectory that is updated asynchronously and using a birdeye camera.
+
 ## Advanced usage
 
 The directory [`advanced_usage`](advanced_usage) contains a set of advanced examples of how to use the library.
