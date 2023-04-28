@@ -12,14 +12,25 @@ classdef ScatterObject < BaseObject
     %
     % Properties
     % ----------
-    %  - data    -> the object's data. It is a N x 3 matrix, where N is the
-    %               number of samples and each row contains the [x, y, z]
-    %               coordinates of the points for the scatter plot.
-    %  - colour  -> the colour for the scatter plot. It can be a triplet of
-    %               RGB values in the range [0, 1] or a matrix of N x 3 values
-    %               where each row contains the RGB values for the corresponding
-    %               point. Default is 'White'.
-    %  - size    -> the size for the markers in the scatter plot. Default is 10.
+    %  - data         -> the object's data. It is a N x 3 matrix, where N is the
+    %                    number of samples and each row contains the [x, y, z]
+    %                    coordinates of the points for the scatter plot.
+    %  - colour       -> the colour for the scatter plot, 'White' by default. It
+    %                    can be a triplet of RGB values in the range [0, 1] or a
+    %                    matrix of N x 3 values where each row contains the RGB
+    %                    values for the corresponding point. If instead an N x 1
+    %                    array is provided, the colour will be inherited from
+    %                    that array using MATLAB's default colour palette. To
+    %                    change palette, set the parameter 'ColourPalette' in
+    %                    the VehiCool constructor (since this setting
+    %                    unfortunately applies to the entire animation).
+    %  - size         -> the size for the markers in the scatter plot. Default
+    %                    is 10.
+    %  - bounding_box -> the bounding box of the object. It is a 2 x 3 matrix
+    %                    composed of the two corners of the bounding box. The
+    %                    first row contains the minimum values for each
+    %                    coordinate, while the second row contains the maximum
+    %                    values.
     %
     % Methods
     % -------
@@ -35,9 +46,10 @@ classdef ScatterObject < BaseObject
     %% Properties
     properties (SetAccess = private, Hidden = true)
 
-        data   % the object's data
-        colour % the colour of the object
-        size   % the size of the markers
+        data         % the object's data
+        colour       % the colour of the object
+        size         % the size of the markers
+        bounding_box % the bounding box of the object
 
     end
 
@@ -54,7 +66,7 @@ classdef ScatterObject < BaseObject
             %                        where N is the number of samples and each
             %                        row contains the [x, y, z] coordinates of
             %                        the points for the scatter plot. If the
-            %                        data is a N x 3 x M matrix, where M is the
+            %                        data is an N x 3 x M matrix, where M is the
             %                        number of sets of data, then the object
             %                        will be updated with each set of data based
             %                        on the 'DeferredUpdate' parameter defined
@@ -86,7 +98,20 @@ classdef ScatterObject < BaseObject
             %                        a triplet of RGB values in the range [0, 1]
             %                        or a matrix of N x 3 values where each row
             %                        contains the RGB values for the
-            %                        corresponding point. Default is 'White'.
+            %                        corresponding point. Default is 'White'. If
+            %                        instead an N x 1 array is provided, the
+            %                        colour will be inherited from that array
+            %                        using MATLAB's default colour palette. To
+            %                        change palette, set the parameter
+            %                        'ColourPalette' in the VehiCool constructor
+            %                        (since this setting unfortunately applies
+            %                        to the entire animation). If the data is an
+            %                        N x 3 x M matrix, where M is the number of
+            %                        sets of data, then the object will be
+            %                        updated with each set of data based on the
+            %                        'DeferredUpdate' parameter defined in the
+            %                        constructor. It could also be an N x 1 x M
+            %                        matrix.
             %  - 'Size'           -> the size for the markers in the scatter
             %                        plot. Default is 10.
             %  - 'Parent'         -> handle of the parent object. Default is [].
@@ -107,7 +132,7 @@ classdef ScatterObject < BaseObject
             addParameter( p, 'DeferredUpdate', 1, @isnumeric );
             addParameter( p, 'InitTrans', eye( 4 ), @isnumeric );
             addParameter( p, 'RotSeq', 'zxy', @ischar );
-            addParameter( p, 'Colour', rgb( 'White' ), @ischar );
+            addParameter( p, 'Colour', rgb( 'White' ), @isnumeric );
             addParameter( p, 'Size', 10, @isnumeric );
             addParameter( p, 'Parent', [], @(x) or( isa( x, 'BaseObject' ), isempty( x ) ) );
             parse( p, data, varargin{:} );
@@ -124,25 +149,28 @@ classdef ScatterObject < BaseObject
             obj.colour = p.Results.Colour;
             obj.size   = p.Results.Size;
 
+            % Compute the bounding box
+            obj.bounding_box = obj.compute_bounding_box();
+
         end
 
-        % Get the object's data
-        function out = get_data( obj )
-            % Get the object's data
+        % Get the current set of data from a dataset
+        function out = get_set( obj, dataset )
+            % Get the current set of data from a dataset
             %
             % Usage
             % -----
-            %  - out = obj.get_data()
+            %  - out = obj.get_set( dataset )
             %
 
             % Check if the object's data is a 3D matrix
-            if ndims( obj.data ) == 3
+            if ndims( dataset ) == 3
 
-                out = obj.data(:, :, obj.idx);
+                out = dataset(:, :, obj.idx);
 
             else
 
-                out = obj.data;
+                out = dataset;
 
             end
 
@@ -157,14 +185,46 @@ classdef ScatterObject < BaseObject
             %  - out = obj.create_descriptor()
             %
 
-            % Get the object's data
-            obj_data = obj.get_data();
+            % Get the object's data, colour, and size
+            obj_data   = obj.get_set( obj.data );
+            obj_colour = obj.get_set( obj.colour );
+            obj_size   = obj.get_set( obj.size );
 
             % Create the patch object from the STL file
             out = scatter3( obj_data(:, 1), obj_data(:, 2), obj_data(:, 3), ...
-                            'MarkerEdgeColor', obj.colour,                  ...
-                            'MarkerFaceColor', obj.colour,                  ...
-                            'SizeData', obj.size );
+                            obj_size, obj_colour );
+
+        end
+
+        % Compute the object's bounding box
+        function out = compute_bounding_box( obj )
+            % Compute the object's bounding box
+            %
+            % Usage
+            % -----
+            %  - out = obj.compute_bounding_box()
+            %
+
+            % Get the object's data
+            obj_data = obj.get_set( obj.data );
+
+            % Compute the bounding box
+            out = [ min( obj_data, [], 1 ); ...
+                    max( obj_data, [], 1 ) ];
+
+        end
+
+        % Update the bounding box
+        function update_bounding_box( obj )
+            % Update the bounding box
+            %
+            % Usage
+            % -----
+            %  - obj.update_bounding_box()
+            %
+
+            % Update the bounding box
+            obj.bounding_box = obj.compute_bounding_box();
 
         end
 
@@ -181,13 +241,23 @@ classdef ScatterObject < BaseObject
             %  - obj.plot( ax )
             %
 
-            % Get the object's data
-            obj_data = obj.get_data();
+            % Get the object's data, colour, and size
+            obj_data   = obj.get_set( obj.data );
+            obj_colour = obj.get_set( obj.colour );
+            obj_size   = obj.get_set( obj.size );
 
-            % Update the object's descriptor
-            obj.descriptor.XData = obj_data(:, 1);
-            obj.descriptor.YData = obj_data(:, 2);
-            obj.descriptor.ZData = obj_data(:, 3);
+            % Update the object's descriptor only if it needs to be updated
+            if ndims( obj.data ) == 3
+                obj.descriptor.XData    = obj_data(:, 1);
+                obj.descriptor.YData    = obj_data(:, 2);
+                obj.descriptor.ZData    = obj_data(:, 3);
+            end
+            if ndims( obj.colour ) == 3
+                obj.descriptor.CData    = obj_colour;
+            end
+            if ndims( obj.size ) == 3
+                obj.descriptor.SizeData = obj_size;
+            end
 
             % Call the superclass method at the end since it updates the index
             update@BaseObject( obj );

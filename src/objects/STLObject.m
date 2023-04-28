@@ -12,11 +12,16 @@ classdef STLObject < BaseObject
     %
     % Properties
     % ----------
-    %  - stl     -> the stl file.
-    %  - colour  -> the colour of the object. It is a triplet of RGB values in
-    %               the range [0, 1].
-    %  - opacity -> the opacity of the object. It is a value in the range
-    %               [0, 1].
+    %  - stl          -> the stl file.
+    %  - colour       -> the colour of the object. It is a triplet of RGB values
+    %                    in the range [0, 1].
+    %  - opacity      -> the opacity of the object. It is a value in the range
+    %                    [0, 1].
+    %  - bounding_box -> the bounding box of the object. It is a 2 x 3 matrix
+    %                    composed of the two corners of the bounding box. The
+    %                    first row contains the minimum values for each
+    %                    coordinate, while the second row contains the maximum
+    %                    values.
     %
     % Methods
     % -------
@@ -32,9 +37,11 @@ classdef STLObject < BaseObject
     %% Properties
     properties (SetAccess = private, Hidden = true)
 
-        stl     % the STL file
-        colour  % the colour of the object
-        opacity % the opacity of the object
+        stl          % the STL file
+        colour       % the colour of the object
+        opacity      % the opacity of the object
+        default_bbox % the default bounding box of the object
+        bounding_box % the bounding box of the object
 
     end
 
@@ -102,6 +109,10 @@ classdef STLObject < BaseObject
             obj.colour  = p.Results.Colour;
             obj.opacity = p.Results.Opacity;
 
+            % Compute the bounding box
+            obj.default_bbox = obj.compute_bounding_box();
+            obj.bounding_box = obj.default_bbox;
+
         end
 
         % Create the object's descriptor
@@ -123,6 +134,41 @@ classdef STLObject < BaseObject
                          'AmbientStrength', 0.5,            ...
                          'DiffuseStrength', 1.0,            ...
                          'SpecularStrength', 1.0 );
+
+        end
+
+        % Compute the object's bounding box
+        function out = compute_bounding_box( obj )
+            % Compute the object's bounding box
+            %
+            % Usage
+            % -----
+            %  - out = obj.compute_bounding_box()
+            %
+
+            % Compute the two opposing corners of the bounding box
+            out = [min( obj.stl.Points, [], 1 ); ... % min x, min y, min z
+                   max( obj.stl.Points, [], 1 )];    % max x, max y, max z
+
+        end
+
+        % Update the bounding box
+        function update_bounding_box( obj )
+            % Update the bounding box
+            %
+            % Usage
+            % -----
+            %  - obj.update_bounding_box()
+            %
+
+            % Get the transformation matrix
+            T = obj.get_transform();
+
+            % Apply the transformation to the bounding box
+            obj.bounding_box = T * [obj.default_bbox, ones( 2, 1 )]';
+
+            % Update the bounding box
+            obj.bounding_box = obj.bounding_box(1:3, :)';
 
         end
 

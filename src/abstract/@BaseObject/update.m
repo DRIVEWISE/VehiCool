@@ -24,6 +24,9 @@ function update( obj )
     % Apply the transform
     obj.transform( T );
 
+    % Update the bounding box
+    obj.update_bounding_box();
+
     % Increment the index
     obj.idx = obj.idx + 1;
 

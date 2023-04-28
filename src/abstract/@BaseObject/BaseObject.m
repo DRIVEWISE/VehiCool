@@ -13,6 +13,14 @@ classdef BaseObject < handle
     % that represent specific objects. The inherited classes must implement the
     % 'create_descriptor' method.
     %
+    % Properties - abstract
+    % ---------------------
+    %  - bounding_box -> the bounding box of the object. It is a 2 x 3 matrix
+    %                    composed of the two corners of the bounding box. The
+    %                    first row contains the minimum values for each
+    %                    coordinate, while the second row contains the maximum
+    %                    values.
+    %
     % Properties
     % ----------
     %  - ax                -> axes handle.
@@ -41,7 +49,8 @@ classdef BaseObject < handle
     %
     % Methods - abstract
     % ------------------
-    %  - create_descriptor( obj ) -> create the object's descriptor.
+    %  - create_descriptor( obj )   -> create the object's descriptor.
+    %  - update_bounding_box( obj ) -> update the bounding box.
     %
     % Methods
     % -------
@@ -79,6 +88,13 @@ classdef BaseObject < handle
     %  - obj.update_children( varargin )
     %
 
+    %% Properties - abstract
+    properties (Abstract, SetAccess = private, Hidden = true)
+
+        bounding_box % the bounding box of the object
+
+    end
+
     %% Properties
     properties (SetAccess = private, Hidden = true)
 
@@ -100,6 +116,7 @@ classdef BaseObject < handle
     methods (Abstract)
 
         out = create_descriptor( obj ) % create the object's descriptor
+        update_bounding_box( obj )     % update the bounding box
 
     end
 
