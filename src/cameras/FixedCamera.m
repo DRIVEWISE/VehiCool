@@ -5,7 +5,7 @@
 
 classdef FixedCamera < BaseCamera
     %% FixedCamera
-    % This class creates a simple follower camera object for the simulation. It
+    % This class creates a simple fixed camera object for the simulation. It
     % is a subclass of BaseCamera, please refer to the documentation of
     % BaseCamera for more information.
     %
@@ -24,10 +24,9 @@ classdef FixedCamera < BaseCamera
     %
     % Methods
     % -------
-    %  - FixedCamera( state, target, ...
-    %                 varargin )         -> constructor.
+    %  - FixedCamera( target, varargin ) -> constructor.
     %  - set_target( target )            -> set camera target.
-    %  - get_target()                    -> get camera current target.
+    %  - get_target_state()                    -> get camera current target.
     %  - create_state()                  -> create the camera state.
     %  - plot( ax, varargin )            -> set the camera.
     %  - update( varargin )              -> update camera state and target.
@@ -36,14 +35,14 @@ classdef FixedCamera < BaseCamera
     % -----
     %  - obj = FixedCamera( state, target, varargin )
     %  - obj.set_target( target )
-    %  - out = obj.get_target()
+    %  - out = obj.get_target_state()
     %  - out = obj.create_state()
     %  - obj.plot( ax, varargin )
     %  - obj.update( varargin )
     %
 
     %% Properties
-    properties
+    properties (SetAccess = private, Hidden = true)
 
         fixed_position % camera fixed position w.r.t the absolute reference
                        % frame (i.e., the reference frame of the plot axes).
@@ -61,6 +60,12 @@ classdef FixedCamera < BaseCamera
             % ----------
             %  - target          -> handle of the target. It has to be a
             %                       BaseObject object.
+            %  - 'Delay'         -> camera delay in following the target. It is
+            %                       the ratio between the time step of the
+            %                       simulation and the time constant of the
+            %                       camera dynamics, which is assumed to be a
+            %                       first order system. Default is 1 (i.e., no
+            %                       delay in following the target).
             %  - 'Projection'    -> camera projection. Options are 'perspective'
             %                       and 'orthographic'. Default is
             %                       'perspective'.
@@ -83,16 +88,12 @@ classdef FixedCamera < BaseCamera
 
             % Parse the inputs
             p = inputParser;
-            addRequired( p, 'target', @(x) isa(x, 'BaseObject') );
-            addParameter( p, 'Projection', 'perspective', @(x) any(validatestring(x, {'perspective', 'orthographic'})) );
-            addParameter( p, 'ViewAngle', 40, @(x) isnumeric(x) && isscalar(x) );
+            p.KeepUnmatched = true;
             addParameter( p, 'FixedPosition', [0, 0, 0], @(x) isnumeric(x) && isvector(x) && length(x) == 3 );
-            parse( p, target, varargin{:} );
+            parse( p, varargin{:} );
 
             % Call the superclass constructor
-            obj@BaseCamera( target, ...
-                            'Projection', p.Results.Projection, ...
-                            'ViewAngle', p.Results.ViewAngle );
+            obj@BaseCamera( target, p.Unmatched );
 
             % Set the camera fixed position
             obj.fixed_position = p.Results.FixedPosition;

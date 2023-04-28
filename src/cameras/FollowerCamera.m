@@ -25,10 +25,9 @@ classdef FollowerCamera < BaseCamera
     %
     % Methods
     % -------
-    %  - FollowerCamera( state, target, ...
-    %                    varargin )         -> constructor.
+    %  - FollowerCamera( target, varargin ) -> constructor.
     %  - set_target( target )               -> set camera target.
-    %  - get_target()                       -> get camera current target.
+    %  - get_target_state()                       -> get camera current target.
     %  - create_state()                     -> create the camera state.
     %  - plot( ax, varargin )               -> set the camera.
     %  - update( varargin )                 -> update camera state and target.
@@ -37,14 +36,14 @@ classdef FollowerCamera < BaseCamera
     % -----
     %  - obj = FollowerCamera( state, target, varargin )
     %  - obj.set_target( target )
-    %  - out = obj.get_target()
+    %  - out = obj.get_target_state()
     %  - out = obj.create_state()
     %  - obj.plot( ax, varargin )
     %  - obj.update( varargin )
     %
 
     %% Properties
-    properties
+    properties (SetAccess = private, Hidden = true)
 
         relative_position % camera relative position w.r.t the target
 
@@ -61,9 +60,15 @@ classdef FollowerCamera < BaseCamera
             % ----------
             %  - target             -> handle of the target. It has to be a
             %                          BaseObject object.
-            %  - 'Projection'       -> camera projection. Options are 'perspective'
-            %                          and 'orthographic'. Default is
-            %                          'perspective'.
+            %  - 'Delay'            -> camera delay in following the target. It
+            %                          is the ratio between the time step of the
+            %                          simulation and the time constant of the
+            %                          camera dynamics, which is assumed to be a
+            %                          first order system. Default is 1 (i.e.,
+            %                          no delay in following the target).
+            %  - 'Projection'       -> camera projection. Options are
+            %                          'perspective' and 'orthographic'. Default
+            %                          is 'perspective'.
             %  - 'ViewAngle'        -> camera viewing angle [deg]. Default is
             %                          40.
             %  - 'RelativePosition' -> camera relative position w.r.t the
@@ -82,16 +87,12 @@ classdef FollowerCamera < BaseCamera
 
             % Parse the inputs
             p = inputParser;
-            addRequired( p, 'target', @(x) isa(x, 'BaseObject') );
-            addParameter( p, 'Projection', 'perspective', @(x) any(validatestring(x, {'perspective', 'orthographic'})) );
-            addParameter( p, 'ViewAngle', 40, @(x) isnumeric(x) && isscalar(x) );
+            p.KeepUnmatched = true;
             addParameter( p, 'RelativePosition', [-10, 0, 6], @(x) isnumeric(x) && isvector(x) && length(x) == 3 );
-            parse( p, target, varargin{:} );
+            parse( p, varargin{:} );
 
             % Call the superclass constructor
-            obj@BaseCamera( target, ...
-                            'Projection', p.Results.Projection, ...
-                            'ViewAngle', p.Results.ViewAngle );
+            obj@BaseCamera( target, p.Unmatched );
 
             % Set the camera relative position
             obj.relative_position = [p.Results.RelativePosition, 1];

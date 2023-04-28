@@ -16,14 +16,16 @@ function plot( obj, ax )
     %  - obj.plot( ax )
     %
 
+    % Parse the inputs
+    p = inputParser();
+    p.addRequired( 'ax', @ishandle );
+    p.parse( ax );
+
     % Set axis handle
-    obj.ax = ax;
+    obj.ax = p.Results.ax;
 
     % Set camera projection
     camproj( obj.ax, obj.projection );
-
-    % Set the camera view angle
-    camva( obj.ax, obj.view_angle );
 
     % Update the camera
     obj.update();
