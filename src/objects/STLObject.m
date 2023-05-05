@@ -93,7 +93,7 @@ classdef STLObject < BaseObject
             addParameter( p, 'STLPath', '../../models/reference_frames/Reference_Frame_3D/Reference_Frame_3D.stl', @ischar );
             addParameter( p, 'InitTrans', eye( 4 ), @isnumeric );
             addParameter( p, 'RotSeq', 'zxy', @ischar );
-            addParameter( p, 'Colour', rgb( 'DarkGray' ), @ischar );
+            addParameter( p, 'Colour', rgb( 'DarkGray' ), @isnumeric );
             addParameter( p, 'Opacity', 1.0, @isnumeric );
             addParameter( p, 'Parent', [], @(x) or( isa( x, 'BaseObject' ), isempty( x ) ) );
             parse( p, state, varargin{:} );
